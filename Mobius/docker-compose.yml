@@ -14,7 +14,7 @@ services:
     #   - "3306:3306"
     network_mode: "host"
     volumes:
-      - mysqlVolume:/docker-entrypoint-initdb.d/mobiusdb.sql
+      - ./Mobius/mobius/mobiusdb.sql:/docker-entrypoint-initdb.d/mobiusdb.sql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"--password=dksdlfduq2","ping"]
       interval: 20s
@@ -26,7 +26,7 @@ services:
     environment:
       - NODE_ENV=production
     volumes:
-      - mobiusVolume:/home/node/app
+      - ./Mobius:/home/node/app
     network_mode: "host"
     expose:
       - "8081"
@@ -40,14 +40,8 @@ services:
     #   - 1883:1883
     network_mode: "host"
     volumes:
-      - mqttVolume:/etc/mosquitto:ro
-      - mqttLogVolume:/var/log/mosquitto:rw
+      - ./etc/mosquitto:/etc/mosquitto:ro
+      - ./var/log/mosquitto:/var/log/mosquitto:rw
     depends_on:
       db:
         condition: service_healthy
-
-volumes:
-  mysqlVolume:
-  mobiusVolume:
-  mqttVolume:
-  mqttLogVolume:
