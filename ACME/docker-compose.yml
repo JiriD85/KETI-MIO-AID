@@ -2,13 +2,13 @@ version: '3'
 services:
   mosquitto:
     image: eclipse-mosquitto:1.6
-    user: "0"
+    #user: "0"
     container_name: mqtt-AID
     restart: unless-stopped
     volumes:
-      - ./Mosquitto/Config:/mosquitto/config
-      - ./Mosquitto/Data:/mosquitto/data
-      - ./Mosquitto/Log:/mosquitto/log
+      - mosquittoConfigVolume:/mosquitto/config
+      - mosquittoDataVolume:/mosquitto/data
+      - mosquittoLogVolume:/mosquitto/log
     ports:
       - 1883:1883
       - 9001:9001
@@ -19,7 +19,7 @@ services:
 
   nodered:
     image: nodered/node-red:latest
-    user: "0"
+    #user: "0"
     container_name: nodered-AID
     environment:
       - TZ=Europe/Vienna
@@ -27,7 +27,7 @@ services:
     ports:
       - 1880:1880
     volumes:
-      - ./NodeRed:/data
+      - noderedVolume:/data
     logging:
       options:
         max-file: "5"
@@ -35,7 +35,7 @@ services:
 
   grafana:
     image: grafana/grafana-oss:latest
-    user: "0"
+    #user: "0"
     container_name: grafana-AID
     environment:
       - TZ=Europe/Vienna
@@ -43,7 +43,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./Grafana:/var/lib/grafana
+      - grafanaVolume:/var/lib/grafana
     logging:
       options:
         max-file: "5"
@@ -51,7 +51,7 @@ services:
   
   portainer:
     image: portainer/portainer-ce:latest
-    user: "0"
+    #user: "0"
     container_name: portainer
     restart: always
     security_opt:
@@ -59,18 +59,18 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./Portainer:/data
+      - portainerVolume:/data
     ports:
       - 8000:8000
       - 9443:9443
       
   cse:
     container_name: acme-cse-AID
-    user: "0"
+    #user: "0"
     image: philipp666/cse:v0.1
     working_dir: "/opt/ACME-oneM2M-CSE/"
     volumes:
-      - ./ACME-CSE:/opt/ACME-oneM2M-CSE
+      - cseVolume:/opt/ACME-oneM2M-CSE
     entrypoint: "python3 -m acme"
     restart: unless-stopped
     ports: 
@@ -92,12 +92,12 @@ services:
   #     # Make sure this matched your adapter location
   #     - /dev/ttyACM0
 
-# volumes:
-#   mosquittoConfigVolume:
-#   mosquittoDataVolume:
-#   mosquittoLogVolume:
-#   noderedVolume:
-#   grafanaVolume:
-#   portainerVolume:
-#   zigbee2mqttVolume:
-#   cseVolume:
+volumes:
+  mosquittoConfigVolume:
+  mosquittoDataVolume:
+  mosquittoLogVolume:
+  noderedVolume:
+  grafanaVolume:
+  portainerVolume:
+  zigbee2mqttVolume:
+  cseVolume:
