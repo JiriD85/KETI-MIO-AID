@@ -20,3 +20,5 @@
 
 ## Installation via docker-compose
 `docker-compose up -d`
+
+![Running Containers](Documentation/Portainer_Containers.png)
