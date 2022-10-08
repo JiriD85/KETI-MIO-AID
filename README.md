@@ -31,8 +31,8 @@
 
 ## Brainstorming CSE
 ### Data Management
-- flex container: <flexContainer> resource: CRUD
-- timeSeriesInstance: <timeSeries> resource: CRUD
+- flex container: ```<flexContainer>``` resource: CRUD
+- timeSeriesInstance: ```<timeSeries>``` resource: CRUD
 ### Authorization
 
 ### Subscriptin/Notification
@@ -58,7 +58,7 @@
 ### Container and contentInstance
 - Attributes: maxNrOfInstances, maxByteSize, locationID, creator, ...
 - Child Resources: container, subscription, latest, oldest, ...
-- <contentInstance> resource: content, creationTime, stateTag, ...
+- ```<contentInstance>``` resource: content, creationTime, stateTag, ...
 
 ### Rescource Discovery
 - Filter conditions: createdBefore, createdAfter, modifiedSince, labels, resourceType, ...
@@ -70,24 +70,23 @@
 
 ### Procedure
 1. Registration: Devices and user app (AEs) registers to the platform (CSE)
-2. Initial resource creation: <container>, <contentInstance>, <subscription>
+2. Initial resource creation: ```<container>, <contentInstance>, <subscription>```
 3. Target container discovery: group creation
 4. Retrieve current sensor data (CO2, temperature, humidity) and status of the actuators (Smart LED, fan)
 5. Single switch on/off Smart LED / Change Smart LED color / Activate fan --> watching notification event
 6. Multiple switch on/off: group fan-out
 
 **1. Registration**
-- Sensor Node 1, Sensor Node 2, Smart LED 1, Smart LED 2, Actuator 1, Actuator 2 <AE> create request
+- Sensor Node 1, Sensor Node 2, Smart LED 1, Smart LED 2, Actuator 1, Actuator 2 ```<AE>``` create request
 
 **2. Initial resource creation**
-- Sensor Node 1, Sensor Node 2, Smart LED 1, Smart LED 2, Actuator 1, Actuator 2 <container>, <contantInstance>, <subscription> create request
+- Sensor Node 1, Sensor Node 2, Smart LED 1, Smart LED 2, Actuator 1, Actuator 2 ```<container>, <contantInstance>, <subscription>```create request
 
 **3. Traget container discovery**
-- User app (AE): discovery request for Smart LED and Actuator control, <group> create request
+- User app (AE): discovery request for Smart LED and Actuator control, ```<group>``` create request
 
 **Resource Tree**
 ```
-{
 CSE<CSEBase>
     room1<AE>
         cnt1<flexContainer>
@@ -107,5 +106,4 @@ CSE<CSEBase>
             tempValue2 <contentInstance>
             humValue2 <contentInstance>
             sub2 <subscription>
-}
 ```
