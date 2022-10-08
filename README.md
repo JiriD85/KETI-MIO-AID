@@ -41,7 +41,7 @@
 
 **Notification**
 - Attributes: eventNotifocationCriteria, notificationURI, ...
-- Notification Target: http://mydomain/notificationHandler?ct=json (ContentType = JSON)
+- Notification Target: ```http://mydomain/notificationHandler?ct=json``` (ContentType = JSON)
 
 **Subscription**
 - Event Type: target update, target delete, child creation, ...
@@ -53,7 +53,7 @@
 
 ### AE Registration <AE> Resource
 - Attributes: appName, App-ID, AE-ID, etc.
-- AE-ID Uniqueness: CSE_MIO_AID/AE1, AE2
+- AE-ID Uniqueness: ```CSE_MIO_AID/AE1, AE2```
 
 ### Container and contentInstance
 - Attributes: maxNrOfInstances, maxByteSize, locationID, creator, ...
@@ -62,7 +62,7 @@
 
 ### Rescource Discovery
 - Filter conditions: createdBefore, createdAfter, modifiedSince, labels, resourceType, ...
-- Discover resources created after a specific time: {URL}?fu=1&cra=20221008T122321
+- Discover resources created after a specific time: ```{URL}?fu=1&cra=20221008T122321```
 
 ### Group
 - group of resources and its management
