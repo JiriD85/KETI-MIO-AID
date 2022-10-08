@@ -86,9 +86,11 @@
 - User app (AE): discovery request for Smart LED and Actuator control, <group> create request
 
 **Resource Tree**
-CSE<<CSEBase>>
-    room1<<AE>>
-        cnt1<<flexContainer>>
+```
+{
+CSE<CSEBase>
+    room1<AE>
+        cnt1<flexContainer>
             smartLEDColor1 <contentInstance>
             smartLEDStatus1 <contentInstance>
             actuatorStatus1 <contentinstance>
@@ -105,3 +107,5 @@ CSE<<CSEBase>>
             tempValue2 <contentInstance>
             humValue2 <contentInstance>
             sub2 <subscription>
+}
+```
