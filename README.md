@@ -91,8 +91,8 @@ CSE<CSEBase>
     room1<AE>
         cnt1<flexContainer>
             smartLEDColor1 <contentInstance>
-            smartLEDStatus1 <contentInstance>
-            actuatorStatus1 <contentinstance>
+            smartLEDControl1 <contentInstance>
+            actuatorControl1 <contentinstance>
             co2Value1 <contentInstance>
             tempValue1 <contentInstance>
             humValue1 <contentInstance>
@@ -100,10 +100,25 @@ CSE<CSEBase>
     room2<AE>
         cnt2<flexContainer>
             smartLEDColor2 <contentInstance>
-            smartLEDStatus2 <contentInstance>
-            actuatorStatus2 <contentinstance>
+            smartLEDControl2 <contentInstance>
+            actuatorControl2 <contentinstance>
             co2Value2 <contentInstance>
             tempValue2 <contentInstance>
             humValue2 <contentInstance>
             sub2 <subscription>
+    userApp<AE>
+        grp1<group>
 ```
+
+**4. Retrieve current status**
+- User app (AE): group fan-out retrieve request
+
+**5. Single on/off**
+- watching notification event
+- User app (AE): ```<contenetInstance> create request``` to CSE
+- CSE: ```notification request``` to actuatorControl1
+
+**6. Multiple on/off**
+- group fan-out
+- User app (AE): ```group fan-out <contentInstance> create request``` to CSE
+- CSE: ```notification request``` to actuatorControl1, actuatorcontrol2
