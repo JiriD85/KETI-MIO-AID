@@ -67,7 +67,7 @@ services:
   cse:
     container_name: acme-cse-AID
     #user: "0"
-    image: philipp666/cse:v0.1
+    image: philipp666/cse:v0.2
     working_dir: "/opt/ACME-oneM2M-CSE/"
     volumes:
       - cseVolume:/opt/ACME-oneM2M-CSE
