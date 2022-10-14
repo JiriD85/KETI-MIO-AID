@@ -122,3 +122,15 @@ CSE<CSEBase>
 - group fan-out
 - User app (AE): ```group fan-out <contentInstance> create request``` to CSE
 - CSE: ```notification request``` to actuatorControl1, actuatorcontrol2
+
+## Besprechung mit Prof. Zeitlhofer 12.10.2022:
+- Verwendung von MQTT (eigener MQTT-Broker im Docker) für die Kommunikation der Sensor Nodes mit der ACME CSE (MCA)
+- siehe OneM2M MQTT Binding TS-0010: https://www.onem2m.org/images/files/deliverables/Release2A/TS-0010-MQTT_protocol_binding-v_2_7_1.pdf
+- kein HTTP
+- TLS Verschlüsselung MQTTS --> CA mit OpenSSL --> less /etc/ssl/openssl.cnf kann vorkonfiguriert werden
+- Webserver für Sensor Node: Wifi SSID, Wifi Kennwort, MQTT-Einstellungen, Domain Name für Node, CSE-Einstellungen usw.
+- Zigbee2mqtt für Smart LED und Aktor --> NodeRed für Topic transformieren --> transformiertes Topic an ACME-CSE mittels MQTT schicken (Alternative: Script schreiben das das Topic subscribed, transfromiert und wieder published)
+- Konfiguration der ACME-CSE/mqtt: https://github.com/ankraft/ACME-oneM2M-CSE/blob/master/docs/Configuration.md#client_mqtt
+- Operation der ACME-CSE/mqtt: https://github.com/ankraft/ACME-oneM2M-CSE/blob/master/docs/Operation.md#mqtt
+- Blockschaltbild der Applikation bis 19.10.!
+- Notification Server für "Automatisierungen"
