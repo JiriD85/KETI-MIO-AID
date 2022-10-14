@@ -12,6 +12,10 @@ services:
     ports:
       - 1883:1883
       - 9001:9001
+    networks:
+      - onem2mnet
+    hostname:
+      - mosquitto
     logging:
       options:
         max-file: "5"
@@ -28,6 +32,10 @@ services:
       - 1880:1880
     volumes:
       - noderedVolume:/data
+    networks:
+      - onem2mnet
+    hostname:
+      - nodered
     logging:
       options:
         max-file: "5"
@@ -44,6 +52,10 @@ services:
       - 3000:3000
     volumes:
       - grafanaVolume:/var/lib/grafana
+    networks:
+      - onem2mnet
+    hostname:
+      - grafana
     logging:
       options:
         max-file: "5"
@@ -60,37 +72,49 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainerVolume:/data
+    networks:
+      - onem2mnet
+    hostname:
+      - portainer
     ports:
       - 8000:8000
       - 9443:9443
       
-  # cse:
-  #   container_name: acme-cse-AID
-  #   #user: "0"
-  #   image: philipp666/cse:v0.2
-  #   working_dir: "/opt/ACME-oneM2M-CSE/"
-  #   volumes:
-  #     - cseVolume:/opt/ACME-oneM2M-CSE
-  #   entrypoint: "python3 -m acme"
-  #   restart: unless-stopped
-  #   ports: 
-  #     - 8080:8080
+  cse:
+    container_name: acme-cse-AID
+    #user: "0"
+    image: philipp666/cse:v0.2
+    working_dir: "/opt/ACME-oneM2M-CSE/"
+    volumes:
+      - cseVolume:/opt/ACME-oneM2M-CSE
+    networks:
+      - onem2mnet
+    hostname:
+      - cse
+    entrypoint: "python3 -m acme"
+    restart: unless-stopped
+    ports: 
+      - 8080:8080
 
   zigbee2mqtt:
     container_name: zigbee2mqttAID
     image: koenkk/zigbee2mqtt
     restart: unless-stopped
     volumes:
-      - zigbee2mqttVolume:/data
+      - zigbee2mqttVolume:/app/data
       - /run/udev:/run/udev:ro
+    networks:
+      - onem2mnet
+    hostname:
+      - nodered
     ports:
       # Frontend port
-      - 8080:8080
+      - 8081:8080
     environment:
       - TZ=Europe/Vienna
     devices:
       # Make sure this matched your adapter location
-      - /dev/ttyUSB0
+      - /dev/serial/by-id/usb_Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
 
 volumes:
   mosquittoConfigVolume:
@@ -101,3 +125,10 @@ volumes:
   portainerVolume:
   zigbee2mqttVolume:
   cseVolume:
+
+networks:
+  default:
+    name: onem2mnet
+    external: true
+  
+# docker network create onem2mnet
