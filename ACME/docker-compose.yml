@@ -1,9 +1,9 @@
-version: '3'
+version: '3.9'
 services:
   mosquitto:
     image: eclipse-mosquitto:1.6
-    #user: "0"
     container_name: mqtt-AID
+    hostname: "mosquitto"
     restart: unless-stopped
     volumes:
       - mosquittoConfigVolume:/mosquitto/config
@@ -14,8 +14,6 @@ services:
       - 9001:9001
     networks:
       - onem2mnet
-    hostname:
-      - mosquitto
     logging:
       options:
         max-file: "5"
@@ -23,8 +21,8 @@ services:
 
   nodered:
     image: nodered/node-red:latest
-    #user: "0"
     container_name: nodered-AID
+    hostname: "nodered"
     environment:
       - TZ=Europe/Vienna
     restart: unless-stopped
@@ -34,8 +32,6 @@ services:
       - noderedVolume:/data
     networks:
       - onem2mnet
-    hostname:
-      - nodered
     logging:
       options:
         max-file: "5"
@@ -43,8 +39,8 @@ services:
 
   grafana:
     image: grafana/grafana-oss:latest
-    #user: "0"
     container_name: grafana-AID
+    hostname: "grafana"
     environment:
       - TZ=Europe/Vienna
     restart: unless-stopped
@@ -54,8 +50,6 @@ services:
       - grafanaVolume:/var/lib/grafana
     networks:
       - onem2mnet
-    hostname:
-      - grafana
     logging:
       options:
         max-file: "5"
@@ -63,8 +57,8 @@ services:
   
   portainer:
     image: portainer/portainer-ce:latest
-    #user: "0"
     container_name: portainer
+    hostname: "portainer"
     restart: always
     security_opt:
       - no-new-privileges:true
@@ -74,39 +68,34 @@ services:
       - portainerVolume:/data
     networks:
       - onem2mnet
-    hostname:
-      - portainer
     ports:
       - 8000:8000
       - 9443:9443
       
   cse:
-    container_name: acme-cse-AID
-    #user: "0"
     image: philipp666/cse:v0.2
+    container_name: acme-cse-AID
+    hostname: "cse"
     working_dir: "/opt/ACME-oneM2M-CSE/"
     volumes:
       - cseVolume:/opt/ACME-oneM2M-CSE
     networks:
       - onem2mnet
-    hostname:
-      - cse
     entrypoint: "python3 -m acme"
     restart: unless-stopped
     ports: 
       - 8080:8080
 
   zigbee2mqtt:
-    container_name: zigbee2mqttAID
     image: koenkk/zigbee2mqtt
+    container_name: zigbee2mqttAID
+    hostname: "zigbee2mqtt"
     restart: unless-stopped
     volumes:
       - zigbee2mqttVolume:/app/data
       - /run/udev:/run/udev:ro
     networks:
       - onem2mnet
-    hostname:
-      - nodered
     ports:
       # Frontend port
       - 8081:8080
@@ -127,8 +116,7 @@ volumes:
   cseVolume:
 
 networks:
-  default:
-    name: onem2mnet
+  onem2mnet:
     external: true
   
 # docker network create onem2mnet
