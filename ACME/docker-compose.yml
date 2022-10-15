@@ -1,123 +1,136 @@
-version: '3.9'
-services:
-  mosquitto:
-    image: eclipse-mosquitto:1.6
-    container_name: mqtt-AID
-    hostname: "mosquitto"
-    restart: unless-stopped
-    volumes:
-      - mosquittoConfigVolume:/mosquitto/config
-      - mosquittoDataVolume:/mosquitto/data
-      - mosquittoLogVolume:/mosquitto/log
-    ports:
-      - 1883:1883
-      - 9001:9001
-    networks:
-      - onem2mnet
-    logging:
-      options:
-        max-file: "5"
-        max-size: "10m"
+  version: '3.9'
+  services:
+    mosquitto:
+      image: eclipse-mosquitto:1.6
+      container_name: mqtt-AID
+      hostname: "mosquitto"
+      restart: unless-stopped
+      volumes:
+        - mosquittoConfigVolume:/mosquitto/config
+        - mosquittoDataVolume:/mosquitto/data
+        - mosquittoLogVolume:/mosquitto/log
+      ports:
+        - 1883:1883
+        - 9001:9001
+      networks:
+        - onem2mnet
+      logging:
+        options:
+          max-file: "5"
+          max-size: "10m"
+      # user: 1000:1000
 
-  nodered:
-    image: nodered/node-red:latest
-    container_name: nodered-AID
-    hostname: "nodered"
-    environment:
-      - TZ=Europe/Vienna
-    restart: unless-stopped
-    ports:
-      - 1880:1880
-    volumes:
-      - noderedVolume:/data
-    networks:
-      - onem2mnet
-    logging:
-      options:
-        max-file: "5"
-        max-size: "10m"
+    nodered:
+      image: nodered/node-red:latest
+      container_name: nodered-AID
+      hostname: "nodered"
+      environment:
+        - TZ=Europe/Vienna
+      restart: unless-stopped
+      ports:
+        - 1880:1880
+      volumes:
+        - noderedVolume:/data
+      networks:
+        - onem2mnet
+      logging:
+        options:
+          max-file: "5"
+          max-size: "10m"
+      # user: 1000:1000
 
-  grafana:
-    image: grafana/grafana-oss:latest
-    container_name: grafana-AID
-    hostname: "grafana"
-    environment:
-      - TZ=Europe/Vienna
-    restart: unless-stopped
-    ports:
-      - 3000:3000
-    volumes:
-      - grafanaVolume:/var/lib/grafana
-    networks:
-      - onem2mnet
-    logging:
-      options:
-        max-file: "5"
-        max-size: "10m"
-  
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    hostname: "portainer"
-    restart: always
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - portainerVolume:/data
-    networks:
-      - onem2mnet
-    ports:
-      - 8000:8000
-      - 9443:9443
-      
-  cse:
-    image: philipp666/cse:v0.2
-    container_name: acme-cse-AID
-    hostname: "cse"
-    working_dir: "/opt/ACME-oneM2M-CSE/"
-    volumes:
-      - cseVolume:/opt/ACME-oneM2M-CSE
-    networks:
-      - onem2mnet
-    entrypoint: "python3 -m acme"
-    restart: unless-stopped
-    ports: 
-      - 8080:8080
+    grafana:
+      image: grafana/grafana-oss:latest
+      container_name: grafana-AID
+      hostname: "grafana"
+      environment:
+        - TZ=Europe/Vienna
+      restart: unless-stopped
+      ports:
+        - 3000:3000
+      volumes:
+        - grafanaVolume:/var/lib/grafana
+      networks:
+        - onem2mnet
+      logging:
+        options:
+          max-file: "5"
+          max-size: "10m"
+      # user: 1000:1000
+    
+    portainer:
+      image: portainer/portainer-ce:latest
+      container_name: portainer
+      hostname: "portainer"
+      restart: always
+      security_opt:
+        - no-new-privileges:true
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - portainerVolume:/data
+      networks:
+        - onem2mnet
+      ports:
+        - 8000:8000
+        - 9443:9443
+      # user: 1000:1000
+        
+    cse:
+      image: philipp666/cse:v0.2
+      container_name: acme-cse-AID
+      hostname: "cse"
+      working_dir: "/opt/ACME-oneM2M-CSE/"
+      volumes:
+        - cseVolume:/opt/ACME-oneM2M-CSE
+      networks:
+        - onem2mnet
+      entrypoint: "python3 -m acme"
+      restart: unless-stopped
+      ports: 
+        - 8080:8080
+      # user: 1000:1000
 
-  zigbee2mqtt:
-    image: koenkk/zigbee2mqtt
-    container_name: zigbee2mqttAID
-    hostname: "zigbee2mqtt"
-    restart: unless-stopped
-    volumes:
-      - zigbee2mqttVolume:/app/data
-      - /run/udev:/run/udev:ro
-    networks:
-      - onem2mnet
-    ports:
-      # Frontend port
-      - 8081:8080
-    environment:
-      - TZ=Europe/Vienna
-    devices:
-      # Make sure this matched your adapter location
-      - /dev/serial/by-id/usb_Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
+    zigbee2mqtt:
+      image: koenkk/zigbee2mqtt
+      container_name: zigbee2mqttAID
+      hostname: "zigbee2mqtt"
+      restart: unless-stopped
+      volumes:
+        - zigbee2mqttVolume:/app/data
+        - /run/udev:/run/udev:ro
+      networks:
+        - onem2mnet
+      ports:
+        # Frontend port
+        - 8081:8080
+      environment:
+        - TZ=Europe/Vienna
+      devices:
+        # Make sure this matched your adapter location
+        - /dev/ttyUSB0:/dev/ttyACM0        
+#        - /dev/serial/by-id/usb_Silicon_Labs_Sonoff_Zigbee_3.0_USB_Dongle_Plus_0001-if00-port0:/dev/ttyACM0
+      # group_add:
+      #   - dialout
+      # user: 1000:1000
 
-volumes:
-  mosquittoConfigVolume:
-  mosquittoDataVolume:
-  mosquittoLogVolume:
-  noderedVolume:
-  grafanaVolume:
-  portainerVolume:
-  zigbee2mqttVolume:
-  cseVolume:
+  volumes:
+    mosquittoConfigVolume:
+    mosquittoDataVolume:
+    mosquittoLogVolume:
+    noderedVolume:
+    grafanaVolume:
+    portainerVolume:
+    zigbee2mqttVolume:
+    cseVolume:
 
-networks:
-  onem2mnet:
-    external: true
-  
-# docker network create onem2mnet
-# docker exec -it acme-cse-AID bash --> Kommandozeile im Container
+  networks:
+    onem2mnet:
+      external: true
+    
+  # Create Network in Docker:                docker network create onem2mnet
+  # Connect Terminal of running Container:   docker exec -it acme-cse-AID bash --> Kommandozeile im Container
+  # Zigbee2mqtt hints for connecting Sonoff USB-Dongle:
+  # 1. Flash Firmware (siehe https://sonoff.tech/wp-content/uploads/2021/12/SONOFF-Zigbee-3.0-USB-dongle-plus-firmware-flashing-1-1.pdf)
+  # 2. Add user to dialout group:               usermod -a -G dialout $USER
+  # 3. Update read/write Permissions for all users: sudo chmod ugo+rw /dev/ttyUSB0
