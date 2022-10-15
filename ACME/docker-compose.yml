@@ -120,3 +120,4 @@ networks:
     external: true
   
 # docker network create onem2mnet
+# docker exec -it acme-cse-AID bash --> Kommandozeile im Container
