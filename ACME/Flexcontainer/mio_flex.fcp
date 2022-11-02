@@ -1,0 +1,159 @@
+[
+    // ModuleClass: mio_airqualitySensor (airSen)
+    {
+        "type"      : "mio:airSen",
+        "lname"     : "mioAirqualitySensor",
+        "cnd"       : "org.onem2m.common.moduleclass.mioAirqualitySensor",
+        "attributes": [
+            // DataPoint: dataGenerationTime
+            { 
+                "sname" : "dgt",
+                "lname" : "dataGenerationTime", 
+                "type" : "timestamp", 
+                "car" : "01" 
+            }, 
+            // DataPoint: co2
+            { 
+                "sname" : "co2", 
+                "lname" : "co2Value", 
+                "type" : "number",
+                "car" : "1" 
+            },
+            // DataPoint: temperature
+            { 
+                "sname" : "temp", 
+                "lname" : "temperatureValue", 
+                "type" : "number",
+                "car" : "1" 
+            },
+            // DataPoint: humidity
+            { 
+                "sname" : "hum", 
+                "lname" : "humidityValue", 
+                "type" : "number",
+                "car" : "1" 
+            }
+        ]
+    },
+
+    // ModuleClass: colorSLed (sLed)
+    {
+        "type"      : "mio:colSLed",
+        "lname"     : "mioColorSmartLed",
+        "cnd"       : "org.onem2m.common.moduleclass.mioColorSmartLed",
+        "attributes": [
+            // DataPoint: dataGenerationTime
+            { 
+                "sname" : "dgt",
+                "lname" : "dataGenerationTime", 
+                "type" : "timestamp", 
+                "car" : "01" 
+            },            
+            // DataPoint: hue
+            { 
+                "sname" : "hue", 
+                "lname" : "hueValue", 
+                "type" : "nonNegInteger",
+                "car" : "1" 
+            },
+            // DataPoint: saturation
+            { 
+                "sname" : "sat", 
+                "lname" : "saturation", 
+                "type" : "nonNegInteger",
+                "car" : "1" 
+            },
+            // DataPoint: colorX
+            { 
+                "sname" : "x", 
+                "lname" : "xValue", 
+                "type" : "number",
+                "car" : "1"
+            },
+            // DataPoint: colorY
+            { 
+                "sname" : "y", 
+                "lname" : "yValue", 
+                "type" : "number",
+                "car" : "1" 
+            }
+        ]
+    },
+    
+    // ModuleClass: linkQuality (lQual)
+    {
+        "type"      : "mio:lQual",
+        "lname"     : "mioLinkQuality",
+        "cnd"       : "org.onem2m.common.moduleclass.mioLinkQuality",
+        "attributes": [
+            // DataPoint: dataGenerationTime
+            { 
+                "sname" : "dgt",
+                "lname" : "dataGenerationTime", 
+                "type" : "timestamp", 
+                "car" : "01" 
+            }, 
+            // DataPoint: linkQuality
+            { 
+                "sname" : "lQual", 
+                "lname" : "linkQualityValue", 
+                "type" : "nonNegInteger",
+                "car" : "1" 
+            }
+        ]
+    },
+
+    // ModuleClass: colorTemp (colT)
+    {
+        "type"      : "mio:colT",
+        "lname"     : "mioColorTemperature",
+        "cnd"       : "org.onem2m.common.moduleclass.mioColorTemperature",
+        "attributes": [
+            // DataPoint: dataGenerationTime
+            { 
+                "sname" : "dgt",
+                "lname" : "dataGenerationTime", 
+                "type" : "timestamp", 
+                "car" : "01" 
+            }, 
+            // DataPoint: colorTemperature
+            { 
+                "sname" : "colT", 
+                "lname" : "colorTemperatureValue", 
+                "type" : "nonNegInteger",
+                "car" : "1" 
+            }
+        ]
+    },
+
+    // DeviceClass: deviceSmartLed
+    {
+        "type"      : "mio:devSLed",
+        "lname"     : "deviceSmartLed",
+        "cnd"       : "org.onem2m.common.device.mioDeviceSmartLed",
+        "children"  : [
+            "cod:fauDn", 
+            "cod:binSh",
+            "cod:runSe", 
+            "mio:colorSLed",
+            "mio:colT",
+            "mio:lQual",
+            "cod:brigs"
+        ]
+    },
+
+    // DeviceClass: deviceAirQualitySensor
+    {
+        "type"      : "mio:devAQS",
+        "lname"     : "mio_deviceAirQualitySensor",
+        "cnd"       : "org.onem2m.common.device.mioDeviceAirQualitySensor",
+        "children"  : [
+            "cod:fauDn", 
+            "cod:binSh", 
+            "cod:runSe", 
+            "cod:color", 
+            "cod:colSn", 
+            "cod:brigs"
+        ]
+    }
+]

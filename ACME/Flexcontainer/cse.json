@@ -1,0 +1,116 @@
+// Ideenfindung flexcontainer //
+
+### SDT DEVICE CLASS ###
+# <flexContainer>
+## [Sensor] ##
+{
+	"m2m:fcnt": {
+		"rn": "Sensor",
+		"cnd": "org.onem2m.airquality.device.deviceSensor"
+	}
+}
+
+## [Light] ##
+{
+	"m2m:fcnt": {
+		"rn": "Light",
+		"cnd": "org.onem2m.airquality.device.deviceLight"
+	}
+}
+
+## [Actuator] ##
+{
+	"m2m:fcnt": {
+		"rn": "Actuator",
+		"cnd": "org.onem2m.airquality.device.deviceActuator"
+	}
+}
+
+
+### DATAPOINTS ###
+## [Sensor] ##
+# CO2
+{
+	"hd:co2": { 
+		"rn": "myCO2",
+		"cnd": "org.onem2m.airquality.moduleclass.co2",
+		"curCO2": 400 
+	}
+}
+# Temperature
+{
+	"hd:tem": { 
+		"rn": "myTemperature",
+		"cnd": "org.onem2m.airquality.moduleclass.temperature",
+		"curT": 25 
+	}
+}
+# Humidity
+{
+	"hd:hum": { 
+		"rn": "myHumidity",
+		"cnd": "org.onem2m.airquality.moduleclass.humidity",
+		"curH": 60 
+	}
+}
+
+## [Light] ##
+# binary switch / power state
+{
+	"hd:binSwi": { 
+		"rn": "mySwitch",
+		"cnd": "org.onem2m.airquality.moduleclass.deviceLightSwitch",
+		"state": true 
+	}
+}
+# fault detection / status
+{
+	"hd:fauDet": { 
+		"rn": "myfaultDetection",
+		"cnd": "org.onem2m.airquality.moduleclass.faultDetection",
+		"status": true 
+	}
+}
+# color saturation / saturation
+{
+	"hd:colSat": { 
+		"rn": "mycolorSaturation",
+		"cnd": "org.onem2m.airquality.moduleclass.colorSaturation",
+		"sat": 0 
+	}
+}
+# color hue / hue
+{
+	"hd:colHue": { 
+		"rn": "mycolorHue",
+		"cnd": "org.onem2m.airquality.moduleclass.colorHue",
+		"hue": 0 
+	}
+}
+# color
+{
+	"hd:color": { 
+		"rn": "myColor",
+		"cnd": "org.onem2m.airquality.moduleclass.color",
+		"x": 0,
+		"y": 100
+	}
+}
+# brightness
+{
+	"hd:brigh": { 
+		"rn": "myBrightness",
+		"cnd": "org.onem2m.airquality.moduleclass.brightness",
+		"brig": 100
+	}
+}
+	
+## [Actuator] ##
+# Status
+{
+	"hd:actSt": { 
+		"rn": "myStatus",
+		"cnd": "org.onem2m.airquality.moduleclass.status",
+		"state": true 
+	}
+}
