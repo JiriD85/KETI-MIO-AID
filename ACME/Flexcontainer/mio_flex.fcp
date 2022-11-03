@@ -1,5 +1,5 @@
 [
-    // ModuleClass: mio_airqualitySensor (airSen)
+    // ModuleClass: mioAirqualitySensor (aiQSr)
     {
         "type"      : "mio:aiQSr",
         "lname"     : "mioAirqualitySensor",
@@ -36,7 +36,7 @@
         ]
     },
 
-    // ModuleClass: colorSLed (sLed)
+    // ModuleClass: mioColorSmartLed (coSLd)
     {
         "type"      : "mio:coSLd",
         "lname"     : "mioColorSmartLed",
@@ -76,33 +76,17 @@
                 "lname" : "yValue", 
                 "type" : "number",
                 "car" : "1" 
-            }
-        ]
-    },
-    
-    // ModuleClass: colorTemp (colT)
-    {
-        "type"      : "mio:colTe",
-        "lname"     : "mioColorTemperature",
-        "cnd"       : "org.fhtwmio.common.moduleclass.mioColorTemperature",
-        "attributes": [
-            // DataPoint: dataGenerationTime
-            { 
-                "sname" : "dgt",
-                "lname" : "dataGenerationTime", 
-                "type" : "timestamp", 
-                "car" : "01" 
-            }, 
-            // DataPoint: colorTemperature
+            },
+            // DataPoint: color temperature
             { 
                 "sname" : "colT", 
                 "lname" : "colorTemperatureValue", 
                 "type" : "nonNegInteger",
                 "car" : "1" 
-            }
+            }            
         ]
     },
-
+    
     // DeviceClass: deviceSmartLed
     {
         "type"      : "mio:devSd",
@@ -114,8 +98,7 @@
             "cod:runSe",
             "cod:sigSh",
             "cod:brigs",
-            "mio:coSLd",
-            "mio:colTe"
+            "mio:coSLd"
         ]
     },
 
