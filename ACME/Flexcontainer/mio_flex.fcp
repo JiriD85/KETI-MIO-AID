@@ -129,7 +129,7 @@
     // DeviceClass: deviceSmartLed
     {
         "type"      : "mio:devSLed",
-        "lname"     : "deviceSmartLed",
+        "lname"     : "mioDeviceSmartLed",
         "cnd"       : "org.onem2m.common.device.mioDeviceSmartLed",
         "children"  : [
             "cod:fauDn", 
@@ -145,15 +145,23 @@
     // DeviceClass: deviceAirQualitySensor
     {
         "type"      : "mio:devAQS",
-        "lname"     : "mio_deviceAirQualitySensor",
+        "lname"     : "mioDeviceAirQualitySensor",
         "cnd"       : "org.onem2m.common.device.mioDeviceAirQualitySensor",
         "children"  : [
             "cod:fauDn", 
-            "cod:binSh", 
-            "cod:runSe", 
-            "cod:color", 
-            "cod:colSn", 
-            "cod:brigs"
+            "mio:airSen"
+        ]
+    },
+
+    // DeviceClass: deviceActuator
+    {
+        "type"      : "mio:devAct",
+        "lname"     : "mioDeviceActuator",
+        "cnd"       : "org.onem2m.common.device.mioDeviceActuator",
+        "children"  : [
+            "cod:fauDn", 
+            "cod:binSh",
+            "mio:lQual"
         ]
     }
 ]
