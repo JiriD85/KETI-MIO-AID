@@ -83,7 +83,7 @@
                 "lname" : "colorTemperatureValue", 
                 "type" : "nonNegInteger",
                 "car" : "1" 
-            }            
+            }        
         ]
     },
     
