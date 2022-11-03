@@ -1,9 +1,9 @@
 [
     // ModuleClass: mio_airqualitySensor (airSen)
     {
-        "type"      : "mio:airSen",
+        "type"      : "mio:aiQSr",
         "lname"     : "mioAirqualitySensor",
-        "cnd"       : "org.onem2m.common.moduleclass.mioAirqualitySensor",
+        "cnd"       : "org.fhtwmio.common.moduleclass.mioAirqualitySensor",
         "attributes": [
             // DataPoint: dataGenerationTime
             { 
@@ -17,30 +17,30 @@
                 "sname" : "co2", 
                 "lname" : "co2Value", 
                 "type" : "number",
-                "car" : "1" 
+                "car" : "01" 
             },
             // DataPoint: temperature
             { 
                 "sname" : "temp", 
                 "lname" : "temperatureValue", 
                 "type" : "number",
-                "car" : "1" 
+                "car" : "01" 
             },
             // DataPoint: humidity
             { 
                 "sname" : "hum", 
                 "lname" : "humidityValue", 
                 "type" : "number",
-                "car" : "1" 
+                "car" : "01" 
             }
         ]
     },
 
     // ModuleClass: colorSLed (sLed)
     {
-        "type"      : "mio:colSLed",
+        "type"      : "mio:coSLd",
         "lname"     : "mioColorSmartLed",
-        "cnd"       : "org.onem2m.common.moduleclass.mioColorSmartLed",
+        "cnd"       : "org.fhtwmio.common.moduleclass.mioColorSmartLed",
         "attributes": [
             // DataPoint: dataGenerationTime
             { 
@@ -59,7 +59,7 @@
             // DataPoint: saturation
             { 
                 "sname" : "sat", 
-                "lname" : "saturation", 
+                "lname" : "saturationValue", 
                 "type" : "nonNegInteger",
                 "car" : "1" 
             },
@@ -80,34 +80,11 @@
         ]
     },
     
-    // ModuleClass: linkQuality (lQual)
-    {
-        "type"      : "mio:lQual",
-        "lname"     : "mioLinkQuality",
-        "cnd"       : "org.onem2m.common.moduleclass.mioLinkQuality",
-        "attributes": [
-            // DataPoint: dataGenerationTime
-            { 
-                "sname" : "dgt",
-                "lname" : "dataGenerationTime", 
-                "type" : "timestamp", 
-                "car" : "01" 
-            }, 
-            // DataPoint: linkQuality
-            { 
-                "sname" : "lQual", 
-                "lname" : "linkQualityValue", 
-                "type" : "nonNegInteger",
-                "car" : "1" 
-            }
-        ]
-    },
-
     // ModuleClass: colorTemp (colT)
     {
-        "type"      : "mio:colT",
+        "type"      : "mio:colTe",
         "lname"     : "mioColorTemperature",
-        "cnd"       : "org.onem2m.common.moduleclass.mioColorTemperature",
+        "cnd"       : "org.fhtwmio.common.moduleclass.mioColorTemperature",
         "attributes": [
             // DataPoint: dataGenerationTime
             { 
@@ -128,28 +105,28 @@
 
     // DeviceClass: deviceSmartLed
     {
-        "type"      : "mio:devSLed",
+        "type"      : "mio:devSd",
         "lname"     : "mioDeviceSmartLed",
-        "cnd"       : "org.onem2m.common.device.mioDeviceSmartLed",
+        "cnd"       : "org.fhtwmio.common.device.mioDeviceSmartLed",
         "children"  : [
             "cod:fauDn", 
             "cod:binSh",
-            "cod:runSe", 
-            "mio:colorSLed",
-            "mio:colT",
-            "mio:lQual",
-            "cod:brigs"
+            "cod:runSe",
+            "cod:sigSh",
+            "cod:brigs",
+            "mio:coSLd",
+            "mio:colTe"
         ]
     },
 
     // DeviceClass: deviceAirQualitySensor
     {
-        "type"      : "mio:devAQS",
+        "type"      : "mio:devAir",
         "lname"     : "mioDeviceAirQualitySensor",
-        "cnd"       : "org.onem2m.common.device.mioDeviceAirQualitySensor",
+        "cnd"       : "org.fhtwmio.common.device.mioDeviceAirQualitySensor",
         "children"  : [
             "cod:fauDn", 
-            "mio:airSen"
+            "mio:aiQSr"
         ]
     },
 
@@ -157,11 +134,11 @@
     {
         "type"      : "mio:devAct",
         "lname"     : "mioDeviceActuator",
-        "cnd"       : "org.onem2m.common.device.mioDeviceActuator",
+        "cnd"       : "org.fhtwmio.common.device.mioDeviceActuator",
         "children"  : [
             "cod:fauDn", 
             "cod:binSh",
-            "mio:lQual"
+            "cod:sigSh"
         ]
     }
 ]
