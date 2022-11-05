@@ -1,12 +1,13 @@
 # CSE Step by Step
 **MQTT Topic** 
-Topic: /oneM2M/req/aqm/id-in/json
-Request: /oneM2M/req/+/id-in/json
-Response: /oneM2M/resp/aqm/id-in/json
+- Topic: /oneM2M/req/aqm/id-in/json
+- Request: /oneM2M/req/+/id-in/json
+- Response: /oneM2M/resp/aqm/id-in/json
 
 ## Creating AE "airQualityMonitoring"
 **cse-in/airQualityMonitoring**
 Resource ID / URL: id-in
+
 Request Header:
 ```
 Content-Type: application/json;ty=2
@@ -64,6 +65,7 @@ Response Body:
 ## Creating Container "room1" inside AE "airQualityMonitoring"
 **cse-in/airQualityMonitoring/room1**
 Ressource ID / URL: Caqm
+
 Request Header:
 ```
 Content-Type: application/json;ty=3
