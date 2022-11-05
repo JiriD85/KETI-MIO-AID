@@ -1,10 +1,12 @@
 # CSE Step by Step
+**MQTT Topic** 
+Topic: /oneM2M/req/aqm/id-in/json
+Request: /oneM2M/req/+/id-in/json
+Response: /oneM2M/resp/aqm/id-in/json
 
 ## Creating AE "airQualityMonitoring"
 **cse-in/airQualityMonitoring**
-
 Resource ID / URL: id-in
-
 Request Header:
 ```
 Content-Type: application/json;ty=2
@@ -80,6 +82,26 @@ Request Body:
     }
 }
 ```
+
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/Caqm",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "id": "ab",
+    "srn": "as",
+    "pc": {
+        "m2m:cnt": {
+            "rn": "room10"
+        }
+    },
+    "ty": 3
+}
+```
+
 Response Header:
 ```
 connection: close
@@ -132,6 +154,24 @@ Request Body:
     }
 }
 ```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<cnt-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "mio:devSd": {
+            "cnd": "org.fhtwmio.common.device.mioDeviceSmartLed",
+            "rn": "led"
+        }
+    },
+    "ty": 28
+}
+```
+
 Response Header:
 ```
 connection: close
@@ -184,6 +224,24 @@ Request Body:
     }
 }
 ```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<cnt-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "mio:devAct": {
+            "cnd": "org.fhtwmio.common.device.mioDeviceActuator",
+            "rn": "actuator10"
+        }
+    },
+    "ty": 28
+}
+```
+
 ## Creating flexcontainer "room1_deviceAirQualitySensor" inside container "room1"
 **cse-in/airQualityMonitoring/room1/room1_deviceAirQualitySensor**
 Ressource ID / URL: cnt1016724803076668936
@@ -202,6 +260,23 @@ Request Body:
         "cnd": "org.fhtwmio.common.device.mioDeviceAirQualitySensor",
         "rn": "sensor"
     }
+}
+```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<cnt-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "mio:devAir": {
+            "cnd": "org.fhtwmio.common.device.mioDeviceAirQualitySensor",
+            "rn": "sensor"
+        }
+    },
+    "ty": 28
 }
 ```
 
@@ -226,6 +301,26 @@ Request Body:
         "temp": 0,
         "hum": 0
     }
+}
+```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devAir-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "mio:aiQSr": {
+            "cnd": "org.fhtwmio.common.moduleclass.mioAirqualitySensor",
+            "rn": "sensor",
+            "co2": 0,
+            "temp": 0,
+            "hum": 0
+        }
+    },
+    "ty": 28
 }
 ```
 
@@ -255,6 +350,28 @@ Request Body:
     }
 }
 ```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devSd-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "mio:coSLd": {
+            "cnd": "org.fhtwmio.common.moduleclass.mioColorSmartLed",
+            "rn": "color",
+            "hue": 0,
+            "sat": 0,
+            "x": 0,
+            "y": 0,
+            "colT": 0
+        }
+    },
+    "ty": 28
+}
+```
 <!--- Status (Switch on/off) -->
 Request Body:
 ```
@@ -264,6 +381,24 @@ Request Body:
         "rn": "status",
         "powSe": false
     }
+}
+```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devSd-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "cod:binSh": {
+            "cnd": "org.onem2m.common.moduleclass.binarySwitch",
+            "rn": "status",
+            "powSe": false
+        }
+    },
+    "ty": 28
 }
 ```
 <!--- Brightness -->
@@ -277,6 +412,24 @@ Request Body:
     }
 }
 ```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devSd-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "cod:brigs": {
+            "cnd": "org.onem2m.common.moduleclass.brightness",
+            "rn": "brightness",
+            "brigs": 254
+        }
+    },
+    "ty": 28
+}
+```
 <!--- Signal Strength -->
 Request Body:
 ```
@@ -286,6 +439,24 @@ Request Body:
         "rn": "lqi",
         "lqi": 0
     }
+}
+```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devSd-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "cod:sigSh": {
+            "cnd": "org.onem2m.common.moduleclass.signalStrength",
+            "rn": "lqi",
+            "lqi": 0
+        }
+    },
+    "ty": 28
 }
 ```
 
@@ -311,6 +482,24 @@ Request Body:
     }
 }
 ```
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devAct-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "cod:binSh": {
+            "cnd": "org.onem2m.common.moduleclass.binarySwitch",
+            "rn": "status",
+            "powSe": false
+        }
+    },
+    "ty": 28
+}
+```
 <!--- Signal Strength -->
 Request Body:
 ```
@@ -322,6 +511,26 @@ Request Body:
     }
 }
 ```
+
+**MQTT**
+```
+{
+    "fr": "aid",
+    "to": "/id-in/<devAct-URI>",
+    "op": 1,
+    "rvi": "3",
+    "rqi": "1234562",
+    "pc": {
+        "cod:sigSh": {
+            "cnd": "org.onem2m.common.moduleclass.signalStrength",
+            "rn": "lqi",
+            "lqi": 0
+        }
+    },
+    "ty": 28
+}
+```
+
 
 ## Templates from ACME CSE
 **Template AE ACME CSE**
