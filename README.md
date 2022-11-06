@@ -22,7 +22,7 @@
 ### Installation via docker-compose
 `docker-compose up -d`
 
-![Running Containers](Documentation/Portainer_Containers.png)
+![Running Containers](Documentation/Pictures/Portainer_Containers.png)
 
 ## Sensor Node Config
 ### SCD30 Sensor

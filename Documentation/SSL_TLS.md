@@ -78,8 +78,8 @@ Edit the settings for "mosquitto" MQTT-Broker
 
 1. Change the port to 8333:
 
-![Change the Port to 8333](Node_Red_MQTT_TLS_1.png)
+![Change the Port to 8333](Pictures/Node_Red_MQTT_TLS_1.png)
 
 2. Upload certificates:
 
-![Upload Certificates](Node_Red_MQTT_TLS_2.png)
+![Upload Certificates](Pictures/Node_Red_MQTT_TLS_2.png)
