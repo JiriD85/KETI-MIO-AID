@@ -18,5 +18,31 @@ Copy files to:
 /var/lib/docker/volumes/acme_mosquittoConfigVolume/_data/
 ```
 
-Edit configuration file *mosquitto.conf*:
+Add lines to configuration file *mosquitto.conf*:
+```
+listener 8883                                 # listening on Port 8883
+cafile /mosquitto/config/ca.crt               # Path to the CA.crt file
+certfile /mosquitto/config/mio_aid.crt        # Path to the PEM encoded server certificate.
+keyfile /mosquitto/config/mio_aid_public.pem  # Path to the PEM encoded keyfile.
 
+```
+
+### 2. ACME CSE ###
+Copy files to:
+```
+/var/lib/docker/volumes/acme_mosquittoConfigVolume/_data/
+```
+
+
+
+### 3. Zigbee2MQTT ###
+Copy files to:
+```
+/var/lib/docker/volumes/acme_mosquittoConfigVolume/_data/
+```
+
+### 4. Node Red ###
+Edit the settings for "mosquitto" MQTT-Broker
+
+![Change the Port to 8333](Node_Red_MQTT_TLS_1.png)
+![Upload Certificates](Node_Red_MQTT_TLS_2.png)
