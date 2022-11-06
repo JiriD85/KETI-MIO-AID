@@ -1,4 +1,6 @@
-## Generate Keys and Certificate Signing Request (CSR) ##
+## Set up CA with OpenSSL ##
+
+### Generate Keys and Certificate Signing Request (CSR) ###
 
 With the provided configuration file *mio_aid.conf* we can create a CSR with the proper extensions.
 
