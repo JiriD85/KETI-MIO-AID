@@ -158,28 +158,111 @@ If we wish to add extensions, then we need to include the configuration file *mi
 openssl ca -config ca.conf -out mio_aid.crt -extfile mio_aid.extensions.conf -in mio_aid.csr
 ```
 
-Output:
-```
-Using configuration from ca.conf
-Check that the request matches the signature
-Signature ok
-The Subject's Distinguished Name is as follows
-countryName           :PRINTABLE:'AT'
-stateOrProvinceName   :ASN.1 12:'Vienna'
-localityName          :ASN.1 12:'Vienna'
-organizationName      :ASN.1 12:'MIO_AID'
-commonName            :ASN.1 12:'localhost'
-ERROR:There is already a certificate for /C=AT/ST=Vienna/O=MIO_AID/CN=localhost
-The matching entry has the following details
-Type          :Valid
-Expires on    :231106202122Z
-Serial Number :01
-File name     :unknown
-Subject Name  :/C=AT/ST=Vienna/O=MIO_AID/CN=localhost
-```
-
 Now we have a certificate that includes SubjectAltNames:
 ```
-openssl ca -config ca.conf -out mio_aid.crt -extfile mio_aid.extensions.conf -in mio_aid.csr
+openssl x509 -in mio_aid.crt -noout -text
 
 ```
+
+Output:
+```
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: sha1WithRSAEncryption
+        Issuer: C = AT, ST = Vienna, L = Vienna, O = MIO_AID, CN = localhost
+        Validity
+            Not Before: Nov  6 20:54:15 2022 GMT
+            Not After : Nov  6 20:54:15 2023 GMT
+        Subject: C = AT, ST = Vienna, O = MIO_AID, CN = localhost
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (4096 bit)
+                Modulus:
+                    00:b4:8d:39:39:ad:b7:fa:7e:36:78:f6:a1:20:66:
+                    56:0b:05:64:09:71:87:df:f4:6e:4f:b8:e2:d4:c8:
+                    ef:ab:56:dd:2b:a5:f5:e1:bc:1e:10:93:f1:59:e5:
+                    1c:bd:eb:0e:26:29:33:e7:1b:2d:79:4e:13:63:58:
+                    34:7f:e5:56:0a:68:24:5b:3e:26:67:0f:29:6e:4b:
+                    4a:38:68:37:b9:30:8e:f1:31:c5:9e:4e:cf:08:9d:
+                    66:8a:a5:9c:b4:10:95:53:8f:6c:14:d6:9b:0d:2e:
+                    bc:5e:d8:ed:9e:87:b3:f1:9e:24:8a:1c:dd:71:ea:
+                    0b:60:00:02:73:bc:90:3d:b3:81:c8:8a:0e:c6:67:
+                    72:9f:93:4e:7e:a6:97:f0:06:77:c0:06:bb:48:b0:
+                    a9:1b:47:df:a3:9e:a1:0d:7a:62:8f:86:55:a6:88:
+                    af:ad:2a:d4:72:5d:db:28:43:07:4a:84:5d:79:f6:
+                    5f:8d:26:03:25:05:ea:2b:85:fd:23:3a:47:cc:96:
+                    44:16:16:cf:fc:64:c1:77:cf:30:6b:13:9a:b9:74:
+                    26:b5:27:ef:92:00:46:ff:96:31:56:d6:16:54:cd:
+                    26:4c:96:e8:fe:5f:47:22:a1:8d:a9:f3:14:3c:38:
+                    07:08:e4:25:c2:99:5d:b2:d7:b8:b9:89:5d:81:f1:
+                    08:2d:66:52:18:51:a9:0a:a3:d6:ca:50:d4:1f:50:
+                    34:2f:5f:d2:2e:3d:af:07:d4:83:53:6c:0d:60:ac:
+                    e1:2e:72:4f:b6:62:81:16:36:c7:65:d4:59:19:cf:
+                    89:cd:50:f7:36:31:bb:96:c5:2d:13:dc:4e:c6:4b:
+                    9b:dd:0f:23:2c:9e:34:30:71:e3:6c:ab:c5:7b:52:
+                    be:77:93:18:c2:5d:65:de:85:79:ac:18:3c:c5:6b:
+                    ef:20:0a:a8:16:a5:9a:2d:b3:22:10:63:74:5e:49:
+                    2d:18:0a:14:ac:65:81:b9:0c:cd:75:a0:91:c8:a3:
+                    b9:53:69:21:e7:22:a0:5d:c4:f5:f6:39:d5:40:9b:
+                    b2:9b:e2:00:bb:85:04:e3:ed:82:c9:d7:f9:32:5f:
+                    51:05:38:5f:9e:1a:d8:bb:4e:70:f9:ff:ab:df:d3:
+                    96:a9:04:02:90:c7:d2:30:a3:f3:70:58:29:42:16:
+                    66:e1:48:df:98:32:86:ea:aa:69:a0:49:76:f0:8a:
+                    b2:ad:5f:a4:a0:fb:38:86:8e:f9:4a:38:2d:d3:1d:
+                    33:1e:6c:14:0f:ef:8d:f1:e7:78:11:14:e3:70:89:
+                    10:96:6d:f2:9f:fd:c9:2c:e0:8e:a2:89:91:b9:d1:
+                    58:5c:96:4d:00:58:bb:97:98:94:e8:fa:8d:57:b5:
+                    7d:cd:3b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints:
+                CA:FALSE
+            X509v3 Subject Alternative Name:
+                DNS:mosquitto, DNS:cse, DNS:zigbee2mqtt, DNS:nodered, DNS:portainer, DNS:grafana
+            X509v3 Subject Key Identifier:
+                C9:8D:39:32:EA:7A:DD:86:BB:1F:B9:76:7A:3C:69:7B:BF:1C:C0:33
+    Signature Algorithm: sha1WithRSAEncryption
+         b1:e0:a1:b3:f5:91:3d:31:47:30:53:29:ef:8b:f1:81:8a:6c:
+         c6:5c:90:a8:82:55:0e:88:ea:26:6b:2c:d2:1b:ff:4a:80:92:
+         64:ae:20:41:ad:46:c5:ff:b0:24:f5:7c:aa:49:f5:12:ff:9e:
+         23:bc:53:6e:0c:78:c1:91:1c:6c:30:71:34:b0:ac:b1:f9:0e:
+         2c:b9:38:5d:1d:b7:d3:2e:63:3d:5f:83:c5:7b:69:ec:53:d9:
+         4f:1b:50:ee:b8:61:1b:20:bf:86:00:24:c5:2b:0f:d3:e6:c3:
+         d9:75:6f:86:4c:9e:22:e3:09:55:73:72:25:d8:c4:3e:36:31:
+         e9:9b:d7:8d:c7:38:f4:9a:51:8a:d4:4f:d9:d1:6c:3e:44:99:
+         3b:b0:f5:69:0d:32:16:c2:76:89:66:1e:4a:a2:94:a7:65:7c:
+         93:58:bc:e1:57:93:1d:76:50:29:a7:ed:8c:8a:56:c8:a7:c3:
+         d5:db:6c:8b:e5:59:43:0f:a9:f5:50:cc:50:f8:20:0a:a8:28:
+         bd:92:61:54:b9:db:af:b2:0e:a8:48:3f:fd:25:c6:cc:4e:be:
+         27:b6:ed:76:9e:99:ac:54:c9:68:4c:87:5a:51:9f:37:05:51:
+         fd:54:c0:46:24:69:7a:9d:c6:db:59:d0:f9:b8:0a:c0:3b:d2:
+         3a:14:d1:78:47:1d:a7:41:57:99:dd:93:bd:58:72:8c:ec:eb:
+         6a:f9:d7:68:c2:37:6a:9a:8a:e3:ed:1c:d4:2e:7a:c9:08:0a:
+         6a:62:5a:3d:e3:75:e5:9c:fe:c5:49:df:a2:86:3c:c1:04:20:
+         58:37:17:7f:5e:a0:5e:7d:75:74:90:22:f0:06:3c:36:04:33:
+         96:9f:b3:03:be:60:3e:f3:4e:ee:f5:22:fe:60:41:70:6e:ca:
+         29:a7:a2:f0:d1:69:15:dd:49:d8:8c:2b:e0:5a:52:8b:b7:a4:
+         45:d8:f4:90:a0:c7:08:d7:22:d3:e1:bc:65:43:da:c7:7f:49:
+         81:1d:e6:bd:61:55:62:78:16:ff:1d:4a:c6:53:93:ad:04:b3:
+         b2:40:84:15:2c:6d:a3:a8:94:51:bb:83:56:3d:ab:cf:18:7d:
+         dc:45:2e:99:74:aa:d8:ca:36:e3:3c:20:ff:44:86:0b:91:87:
+         a9:23:88:a0:42:43:1d:8a:fe:ef:18:e5:2b:62:71:3e:f9:0d:
+         60:b0:39:c8:f3:13:9a:d6:47:64:97:f8:2a:96:4a:65:47:b5:
+         cd:9f:9f:90:ef:b5:5c:7b:79:b8:49:b5:d9:77:fb:eb:60:2d:
+         21:7c:8e:e5:b0:e1:87:d2:dc:2c:24:af:c5:01:0e:80:b0:51:
+         87:44:be:b4:45:e4:f6:55
+```
+
+We can verify if the certificate is correct:
+```
+openssl verify -CAfile ca.crt mio_aid.crt
+```
+
+Output:
+```
+mio_aid.crt: OK
+```
+
+Credits to: https://gist.github.com/Soarez/9688998
