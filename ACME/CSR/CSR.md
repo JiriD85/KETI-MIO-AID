@@ -265,4 +265,10 @@ Output:
 mio_aid.crt: OK
 ```
 
+### Create private and public keys ###
+```
+openssl rsa -in server.key -text > private.pem
+openssl x509 -inform PEM -in server.crt > public.pem
+```
+
 Credits to: https://gist.github.com/Soarez/9688998
