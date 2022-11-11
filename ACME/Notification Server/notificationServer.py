@@ -18,7 +18,6 @@ import cbor2
 from rich.console import Console
 from rich.syntax import Syntax
 
-import paho.mqtt.client as mqtt
 import pathlib, os
 parent = pathlib.Path(os.path.abspath(os.path.dirname(__file__))).parent.parent
 sys.path.append(f'{parent}')
@@ -29,8 +28,6 @@ from acme.etc.DateUtils import getResourceDate
 from acme.etc.Types import ContentSerializationType
 from acme.etc.Constants import Constants as C
 
-import ssl
-
 ##############################################################################
 #
 #	HTTP Server
@@ -39,40 +36,6 @@ import ssl
 port = 9999	# Change this variable to specify another port.
 messageColor = 'spring_green2'
 errorColor = 'red'
-
-#Mqtt Values to publish to mosquitto
-Broker="mqtt://mosquitto" 
-Port =8883 
-QOS = 1 
-client=mqtt.Client()
-# mqtt.tls_set(ca_certs=ca.crt, certfile=mio_aid.crt, keyfile=mio_aid.key, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS, ciphers=None)
-# TLS/SSL
-ca_cert = "/var/lib/docker/volumes/acme_cseVolume/_data/tools/notificationServer/ca.crt"
-certfile = "/var/lib/docker/volumes/acme_cseVolume/_data/tools/notificationServer/mio_aid.crt"
-keyfile = "/var/lib/docker/volumes/acme_cseVolume/_data/tools/notificationServer/mio_aid.key"
-
- 
-actuatorStatusTrue={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":3,"rvi":"3","rqi":"1234562","pc":{"cod:binSh":{"powSe":True}},"ty":28}
-actuatorStatusFalse={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":3,"rvi":"3","rqi":"1234562","pc":{"cod:binSh":{"powSe":False}},"ty":28} 
-colorLedRed={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":"3","rvi":3,"rqi":"1234562","pc":{"mio:coSLd":{"hue":3,"sat":96,"x":0.6307692307692307,"y":0.3230769230769231,"colT":319}},"ty":28}
-colorLedYellow={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":"3","rvi":3,"rqi":"1234562","pc":{"mio:coSLd":{"hue":66,"sat":93,"x":0.41847826086956524,"y":0.5054347826086957,"colT":255}},"ty":28}
-colorLedDarkGreen={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":"3","rvi":3,"rqi":"1234562","pc":{"mio:coSLd":{"hue":104,"sat":93,"x":0.2962962962962963,"y":0.5925925925925926,"colT":250}},"ty":28}
-colorLedOff={"fr":"aid","to":"/id-in/binSh4259115029833081984","op":"3","rvi":3,"rqi":"1234562","pc":{"mio:coSLd":{"powSe":False}},"ty":28}
-
-
-
-
-topicActuatorStatus="/oneM2M/req/aqm/id-in/json"
-
-client.tls_set(ca_certs=ca_cert, certfile=certfile, keyfile=keyfile, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS, ciphers=None)
-client.tls_insecure_set(True)
-client.connect(Broker,Port)
-#threshold values
-co2Good = 800
-co2Medium = 1000
-co2Ok = 1400
-tempHigh = 26
-humidity = 0.6
 
 failVerification = False
 
@@ -112,26 +75,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		# Print the content data
 		console.print(f'[{messageColor}]### Notification (http)')
 		console.print(self.headers, highlight = False)
-
-		###Automation Code ###
-		y = json.loads(post_data)
-		sensorCo2=float(y["m2m:sgn"]["nev"]["rep"]["mio:aiQSr"]["co2"])
-		sensorHum=float(y["m2m:sgn"]["nev"]["rep"]["mio:aiQSr"]["hum"])
-		sensorTemp=float(y["m2m:sgn"]["nev"]["rep"]["mio:aiQSr"]["temp"])
-
-		if sensorCo2>co2Ok:
-			print("Luft Qualität schlecht: " + "Co2: " +str(sensorCo2)+"ppm " +"Temp: "+str(sensorTemp )+"° " +"Hum: "+str(sensorHum)+"%")
-			client.publish(topicActuatorStatus,json.dumps(actuatorStatusTrue),qos=QOS)
-			client.publish(topicActuatorStatus,json.dumps(colorLedRed),qos=QOS)
-		if co2Medium<sensorCo2<=co2Ok:
-                	print("Luft Qualität ausreichend: " + "Co2: " +str(sensorCo2)+"ppm " +"Temp: "+str(sensorTemp )+"° " +"Hum: "+str(sensorHum)+"%")
-                	client.publish(topicActuatorStatus,json.dumps(actuatorStatusFalse),qos=QOS)
-#			client.publish(topicActuatorStatus,json.dumps(colorLedYellow),qos=QOS)
-		if co2Medium<sensorCo2<=co2Ok:
-                	print("Luft Qualität ausreichend: " + "Co2: " +str(sensorCo2)+"ppm " +"Temp: "+str(sensorTemp )+"° " +"Hum: "+str(sensorHum)+"%")
-                	client.publish(topicActuatorStatus,json.dumps(actuatorStatusFalse),qos=QOS)
-                	client.publish(topicActuatorStatus,json.dumps(colorLedDarkGreen),qos=QOS)
-		###End of Automation###
 
 		# Print JSON
 		if contentType in [ 'application/json', 'application/vnd.onem2m-res+json' ]:
@@ -290,6 +233,10 @@ class MQTTClient(object):
 											 interface			= '0.0.0.0',
 											 username 			= args.mqttUsername,
 											 password			= args.mqttPassword,
+											 useTLS				= args.mqtts,
+											 caFile				= args.caFile,
+											 certfile			= args.mqttCert,
+											 keyfile			= args.mqttKey,
 											 messageHandler 	= MQTTClientHandler	(args.mqttTopic, args.mqttLogging))
 	
 
@@ -344,6 +291,10 @@ if __name__ == '__main__':
 	parser.add_argument('--mqtt-username', action='store', dest='mqttUsername', default=None, metavar='<username>',  help='MQTT username (default: None)')
 	parser.add_argument('--mqtt-password', action='store', dest='mqttPassword', default=None, required='--mqttUsername' in sys.argv, metavar='<password>',  help='MQTT password (default: None)')
 	parser.add_argument('--mqtt-logging', action='store_true', dest='mqttLogging', default=False, help='MQTT enable logging (default: disabled)')
+	parser.add_argument('--mqtt-useTLS', action='store_true', dest='mqtts', default=False, help='Enable MQTTS (default: disabled)')
+	parser.add_argument('--mqtt-caFile', action='store', metavar='<cafile>', dest='caFile', default=None, help='CA Certficiate ca.crt file (default: None)')
+	parser.add_argument('--mqtt-certfile', action='store', metavar='<certfile>', dest='mqttCert', default=None, help='Certificate file *.crt for MQTTS (default: None)')
+	parser.add_argument('--mqtt-keyfile', action='store', metavar='<keyfile>', dest='mqttKey', default=None, help='Key file *.key for MQTTS (default: None)')
 
 	# Generic
 	parser.add_argument('--fail-verification', action='store_true', dest='failVerification', default=False, help='Fail verification requests (default: false)')
