@@ -44,10 +44,7 @@
 
 **Notification**
 - Attributes: eventNotifocationCriteria, notificationURI, ...
-- Notification Target: 
-```
-localhost:9999 (ContentType = JSON)
-``` 
+- Notification Target: ```localhost:9999 (ContentType = JSON)``` 
 
 **Subscription**
 - Event Type: target update, target delete, child creation, ...
@@ -59,17 +56,12 @@ localhost:9999 (ContentType = JSON)
 
 ### AE Registration <AE> Resource
 - Attributes: appName, App-ID, AE-ID, etc.
-- AE-ID Uniqueness: 
-```
-cse-in/airQualityMonitoring
-```
+- AE-ID Uniqueness: ```cse-in/airQualityMonitoring```
 
 ### Container and contentInstance
 - Attributes: maxNrOfInstances, maxByteSize, locationID, creator, ...
 - Child Resources: container, subscription, latest, oldest, ...
-```
-cse-in/airQualityMonitoring/room1 #resource: content, creationTime, stateTag
-``` 
+```cse-in/airQualityMonitoring/room1 #resource: content, creationTime, stateTag``` 
 
 ### Rescource Discovery
 - Filter conditions: createdBefore, createdAfter, modifiedSince, labels, resourceType, ...
@@ -78,7 +70,7 @@ cse-in/airQualityMonitoring/room1 #resource: content, creationTime, stateTag
 ### Group
 - group of resources and its management
 - attributes: memberIDs (ID of group member resources)
-- e.g. Group of actuators
+- e.g. Group of actuators:
 ```
 cse-in/airQualityMonitoring/gractuator
 cse-in/airQualityMonitoring/grsled
