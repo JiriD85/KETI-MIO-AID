@@ -11,7 +11,7 @@
 - **Port:** 3000
 
 ### Zigbee2MQTT
-- **Ports:** 1883, 9001
+- **Ports:** 8883, 9001
 
 ### NodeRed
 - **Port:** 1880
@@ -31,17 +31,23 @@
 
 ## Brainstorming CSE
 ### Data Management
-- flex container: ```<flexContainer>``` resource: CRUD
-- timeSeriesInstance: ```<timeSeries>``` resource: CRUD
-### Authorization
+- application AE: aqm (air quality management)
+- container: room1, room2
+- flex container: device classes (devAct, devSd, devAir), module classes (cod:binSh, cod:sigSh, mio:coSLd, mio:aiQSr)
 
-### Subscriptin/Notification
-- crate a subscription to a resource
+### Authorization
+- access control policies: acp_admin, acp_room1, acp_room2
+
+### Subscription/Notification
+- Notification Server on Port 9999
 - <subscription> resource: CRUD
 
 **Notification**
 - Attributes: eventNotifocationCriteria, notificationURI, ...
-- Notification Target: ```http://mydomain/notificationHandler?ct=json``` (ContentType = JSON)
+- Notification Target: 
+```
+localhost:9999 (ContentType = JSON)
+``` 
 
 **Subscription**
 - Event Type: target update, target delete, child creation, ...
@@ -53,12 +59,17 @@
 
 ### AE Registration <AE> Resource
 - Attributes: appName, App-ID, AE-ID, etc.
-- AE-ID Uniqueness: ```CSE_MIO_AID/AE1, AE2```
+- AE-ID Uniqueness: 
+```
+cse-in/airQualityMonitoring
+```
 
 ### Container and contentInstance
 - Attributes: maxNrOfInstances, maxByteSize, locationID, creator, ...
 - Child Resources: container, subscription, latest, oldest, ...
-- ```<contentInstance>``` resource: content, creationTime, stateTag, ...
+```
+cse-in/airQualityMonitoring/room1 #resource: content, creationTime, stateTag
+``` 
 
 ### Rescource Discovery
 - Filter conditions: createdBefore, createdAfter, modifiedSince, labels, resourceType, ...
@@ -66,11 +77,16 @@
 
 ### Group
 - group of resources and its management
-- attributs: memberIDs (ID of group member resources)
+- attributes: memberIDs (ID of group member resources)
+- e.g. Group of actuators
+```
+cse-in/airQualityMonitoring/gractuator
+cse-in/airQualityMonitoring/grsled
+```
 
 ### Procedure
 1. Registration: Devices and user app (AEs) registers to the platform (CSE)
-2. Initial resource creation: ```<container>, <contentInstance>, <subscription>```
+2. Initial resource creation: <acp>, <container>, <flexcontainer>, <subscription>
 3. Target container discovery: group creation
 4. Retrieve current sensor data (CO2, temperature, humidity) and status of the actuators (Smart LED, fan)
 5. Single switch on/off Smart LED / Change Smart LED color / Activate fan --> watching notification event
@@ -88,26 +104,32 @@
 **Resource Tree**
 ```
 CSE<CSEBase>
-    room1<AE>
-        cnt1<flexContainer>
-            smartLEDColor1 <contentInstance>
-            smartLEDControl1 <contentInstance>
-            actuatorControl1 <contentinstance>
-            co2Value1 <contentInstance>
-            tempValue1 <contentInstance>
-            humValue1 <contentInstance>
-            sub1 <subscription>
-    room2<AE>
-        cnt2<flexContainer>
-            smartLEDColor2 <contentInstance>
-            smartLEDControl2 <contentInstance>
-            actuatorControl2 <contentinstance>
-            co2Value2 <contentInstance>
-            tempValue2 <contentInstance>
-            humValue2 <contentInstance>
-            sub2 <subscription>
-    userApp<AE>
-        grp1<group>
+    airQualityMonitoring<AE> *cse-in/airQualityMonitoring*
+        room1<container> *cse-in/airQualityMonitoring/room1*
+            mio:devAct<flexContainer> *cse-in/airQualityMonitoring/room1/actuator*
+               cod:sigSh<flexContainer> *cse-in/airQualityMonitoring/room1/actuator/lqi*
+               cod:binSh<flexContainer> *cse-in/airQualityMonitoring/room1/actuator/status*
+            mio:devSd<flexContainer> *cse-in/airQualityMonitoring/room1/led*
+               cod:sigSh<flexContainer> *cse-in/airQualityMonitoring/room1/led/lqi*
+               cod:binSh<flexContainer> *cse-in/airQualityMonitoring/room1/led/status*
+               cod:brigs<flexContainer> *cse-in/airQualityMonitoring/room1/led/brigs*
+               mio:coSLd<flexContainer> *cse-in/airQualityMonitoring/room1/led/color*
+            mio:devAir<flexContainer> *cse-in/airQualityMonitoring/room1/sensor*
+               mio:aiQSr<flexContainer> *cse-in/airQualityMonitoring/room1/sensor/value*
+        room2<container> *cse-in/airQualityMonitoring/room2*
+            mio:devAct<flexContainer> *cse-in/airQualityMonitoring/room2/actuator*
+               cod:sigSh<flexContainer> *cse-in/airQualityMonitoring/room2/actuator/lqi*
+               cod:binSh<flexContainer> *cse-in/airQualityMonitoring/room2/actuator/status*
+            mio:devSd<flexContainer> *cse-in/airQualityMonitoring/room2/led*
+               cod:sigSh<flexContainer> *cse-in/airQualityMonitoring/room2/led/lqi*
+               cod:binSh<flexContainer> *cse-in/airQualityMonitoring/room2/led/status*
+               cod:brigs<flexContainer> *cse-in/airQualityMonitoring/room2/led/brigs*
+               mio:coSLd<flexContainer> *cse-in/airQualityMonitoring/room2/led/color*
+            mio:devAir<flexContainer> *cse-in/airQualityMonitoring/room2/sensor*
+               mio:aiQSr<flexContainer> *cse-in/airQualityMonitoring/room2/sensor/value*
+    userApp<AE> *tbd*
+        gractuator<group> *cse-in/userApp/gractuator*
+        grsled<group> *cse-in/userApp/gractuator*
 ```
 
 **4. Retrieve current status**
