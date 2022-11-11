@@ -12,8 +12,8 @@ extern "C"
 
 //##################################################################################
 //##################################################################################
-#define WIFI_SSID "GriesserLan"
-#define WIFI_PASSWORD "phiist3141"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 
 #define ASYNC_TCP_SSL_ENABLED       true
