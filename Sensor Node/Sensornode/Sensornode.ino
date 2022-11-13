@@ -3,6 +3,8 @@
 #include <WiFi.h>
 #include <Ticker.h>
 #include <Adafruit_SCD30.h>
+#include <string.h>
+
 
 extern "C"
 {
@@ -12,8 +14,8 @@ extern "C"
 
 //##################################################################################
 //##################################################################################
-#define WIFI_SSID "GriesserLan"
-#define WIFI_PASSWORD "phiist3141"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 
 #define ASYNC_TCP_SSL_ENABLED       true
@@ -45,15 +47,34 @@ AsyncMqttClient mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
 
+//#########################################################################
+//OneM2M MQTT Default mgf
+
+#define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring_test\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":{\"rn\": \"room%i\"}},\"ty\": 3}"
+#define NEW_FlexContainer_devAir  "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
+#define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
+#define UPDATE_SENSOR "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%f,\"temp\":%f,\"hum\":%f}},\"ty\":28}"
 
 
 
+
+
+
+
+#define dip0 25
+#define dip1 33
+#define dip2 32
+#define dip3 35
+uint8_t roomnr = 0b0;
 
 //##################################################################################
 //##################################################################################
 
 // SCD30 Arduino IDE Example
 Adafruit_SCD30  scd30;
+
+
+
 
 // MQTT Arduino IDE Example##############################################################
 void connectToWifi()
@@ -129,6 +150,7 @@ void onMqttConnect(bool sessionPresent)
   
   uint16_t packetIdSub = mqttClient.subscribe(PubTopic, 2);
   Serial.print("Subscribing at QoS 2, packetId: "); Serial.println(packetIdSub);
+
   
   mqttClient.publish(PubTopic, 0, true, "ESP32 Test");
   Serial.println("Publishing at QoS 0");
@@ -138,6 +160,8 @@ void onMqttConnect(bool sessionPresent)
   
   uint16_t packetIdPub2 = mqttClient.publish(PubTopic, 2, true, "test 3");
   Serial.print("Publishing at QoS 2, packetId: "); Serial.println(packetIdPub2);
+
+  create_room();
 
   printSeparationLine();
 }
@@ -180,6 +204,7 @@ void onMqttMessage(char* topic, char* payload, const AsyncMqttClientMessagePrope
   Serial.print("  len: ");    Serial.println(len);
   Serial.print("  index: ");  Serial.println(index);
   Serial.print("  total: ");  Serial.println(total);
+
 }
 
 void onMqttPublish(const uint16_t& packetId)
@@ -188,7 +213,29 @@ void onMqttPublish(const uint16_t& packetId)
   Serial.print("  packetId: "); Serial.println(packetId);
 }// MQTT Arduino IDE Example##############################################################
 
+// OneM2M 
 
+
+void create_room(){
+
+  char msg [350]; 
+
+  sprintf(msg,NEW_ROOM_MSG,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+
+
+}
 
 
 void setup() {
@@ -202,6 +249,23 @@ void setup() {
     Serial.println("Failed to find SCD30 chip");
     while (1) { delay(10); }
   }
+
+  pinMode(dip0, INPUT_PULLUP);
+  pinMode(dip1, INPUT_PULLUP);
+  pinMode(dip2, INPUT_PULLUP);
+  pinMode(dip3, INPUT_PULLUP);
+
+  if (digitalRead(dip0))  roomnr |= 1 ;
+  if (digitalRead(dip1))  roomnr |= 2 ; 
+  if (digitalRead(dip2))  roomnr |= 4 ; 
+  if (digitalRead(dip3))  roomnr |= 8 ;
+
+  Serial.print("Room nr: "); Serial.println(roomnr); 
+  Serial.println(digitalRead(dip0));
+  Serial.println(digitalRead(dip1));
+  Serial.println(digitalRead(dip2));
+  Serial.println(digitalRead(dip3));
+
   Serial.println("SCD30 Found!");
 
   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
@@ -230,6 +294,9 @@ void setup() {
 
   connectToWifi();
 
+
+  
+
 }
 
 
@@ -254,21 +321,12 @@ void readSCD30(){
     Serial.println(" ppm");
     Serial.println("");
 
+    char msg[350];
+    sprintf(msg,UPDATE_SENSOR,scd30.CO2,scd30.temperature,scd30.relative_humidity);
+    mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+    Serial.print(msg);
 
-       // Publish an MQTT message on topic esp/bme280/temperature
-    uint16_t packetIdPub1 = mqttClient.publish("/test/tmp", 1, true, String(scd30.temperature).c_str());                            
-    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", "/test/tmp", packetIdPub1);
-    Serial.printf("Message: %.2f \n", scd30.temperature);
 
-    // Publish an MQTT message on topic esp/bme280/humidity
-    uint16_t packetIdPub2 = mqttClient.publish("/test/hum", 1, true, String(scd30.relative_humidity).c_str());                            
-    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", "/test/hum", packetIdPub2);
-    Serial.printf("Message: %.2f \n", scd30.relative_humidity);
-
-    // Publish an MQTT message on topic esp/bme280/pressure
-    uint16_t packetIdPub3 = mqttClient.publish("/test/co2", 1, true, String(scd30.CO2).c_str());                            
-    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i ", "/test/co2", packetIdPub3);
-    Serial.printf("Message: %d \n", scd30.CO2);
 
 
 
@@ -284,7 +342,11 @@ void readSCD30(){
 
 void loop() {
 
+  
+  
   readSCD30();
   delay(5000);
+
+ 
   
 }
