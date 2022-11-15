@@ -53,7 +53,7 @@ TimerHandle_t wifiReconnectTimer;
 #define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring_test\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":{\"rn\": \"room%i\"}},\"ty\": 3}"
 #define NEW_FlexContainer_devAir  "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
 #define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
-#define UPDATE_SENSOR "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%f,\"temp\":%f,\"hum\":%f}},\"ty\":28}"
+#define UPDATE_SENSOR "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%10s,\"temp\":%10s,\"hum\":%10s}},\"ty\":28}"
 
 
 
