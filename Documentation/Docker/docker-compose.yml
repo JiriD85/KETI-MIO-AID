@@ -11,6 +11,7 @@
         - mosquittoLogVolume:/mosquitto/log
       ports:
         - 1883:1883
+        - 8883:8883
         - 9001:9001
       networks:
         - onem2mnet
