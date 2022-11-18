@@ -1,30 +1,34 @@
-
 #define ASYNC_TCP_SSL_ENABLED 1
 #include <WiFi.h>
 #include <Ticker.h>
 #include <Adafruit_SCD30.h>
 #include <string.h>
-
-
+#include <AsyncMqtt_Generic.h>
 extern "C"
 {
   #include "freertos/FreeRTOS.h"
   #include "freertos/timers.h"
 }
-
-//##################################################################################
-//##################################################################################
-#define WIFI_SSID "eda312"
-#define WIFI_PASSWORD "embsyseda312"
-
-
+//####################################################################################################################
+//####################################################################################################################
+//Wifi Credentials
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
+// defines for sleep mode
+//####################################################################################################################
+#define sleep_enabled true      // recommened for battery usage   
+#define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  600        /* Time ESP32 will go to sleep (in seconds) after wakeup sensor value will be sent and then go to sleep again*/
+#define update_time    5          // Time in minutes when sensor value is resent will only take effect if sleep is disabled 
+#define mS_TO_m_FACTOR 60000
+RTC_DATA_ATTR int bootCount = 0; // will be safed and recovere
+bool init_finished;
+bool sent;
+// MQTT Defines
+//####################################################################################################################
 #define ASYNC_TCP_SSL_ENABLED       true
-//#define ASYNC_TCP_SSL_ENABLED       false
 
-#include <AsyncMqtt_Generic.h>
-
-//#define MQTT_HOST         IPAddress(192, 168, 2, 110)
-#define MQTT_HOST         "192.168.1.102"        // Broker address
+#define MQTT_HOST         ""        // Broker address
 
 #if ASYNC_TCP_SSL_ENABLED
 
@@ -48,31 +52,21 @@ TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
 
 //#########################################################################
-//OneM2M MQTT Default mgf
+//OneM2M MQTT Default msg
 
 #define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room1\"],{\"rn\": \"room%i\"}},\"ty\": 3}"
 #define NEW_FlexContainer_devAir  "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
 #define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
 #define UPDATE_SENSOR "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%lf,\"temp\":%lf,\"hum\":%lf}},\"ty\":28}"
 
-
-
 #define dip0 25
 #define dip1 33
 #define dip2 32
 #define dip3 35
 uint8_t roomnr = 0b0;
-
-//##################################################################################
-//##################################################################################
-
-// SCD30 Arduino IDE Example
 Adafruit_SCD30  scd30;
-
-
-
-
-// MQTT Arduino IDE Example##############################################################
+// #############################################################
+// Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi
 void connectToWifi()
 {
   Serial.println("Connecting to Wi-Fi...");
@@ -129,7 +123,10 @@ void WiFiEvent(WiFiEvent_t event)
       break;
   }
 }
-
+// Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi
+// ####################################################################################
+//#####################################################################################################
+//MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT
 void printSeparationLine()
 {
   Serial.println("************************************************");
@@ -146,7 +143,6 @@ void onMqttConnect(bool sessionPresent)
   
   uint16_t packetIdSub = mqttClient.subscribe(PubTopic, 2);
   Serial.print("Subscribing at QoS 2, packetId: "); Serial.println(packetIdSub);
-
   
   mqttClient.publish(PubTopic, 0, true, "ESP32 Test");
   Serial.println("Publishing at QoS 0");
@@ -157,7 +153,12 @@ void onMqttConnect(bool sessionPresent)
   uint16_t packetIdPub2 = mqttClient.publish(PubTopic, 2, true, "test 3");
   Serial.print("Publishing at QoS 2, packetId: "); Serial.println(packetIdPub2);
 
-  create_room();
+  // Create room only at initial boot 
+  // Will create room if succesfully connected to Broaker
+  if(bootCount > 2){
+    create_room();
+    init_finished = true;
+  }
 
   printSeparationLine();
 }
@@ -207,32 +208,12 @@ void onMqttPublish(const uint16_t& packetId)
 {
   Serial.println("Publish acknowledged");
   Serial.print("  packetId: "); Serial.println(packetId);
-}// MQTT Arduino IDE Example##############################################################
-
-// OneM2M 
-
-
-void create_room(){
-
-  char msg [350]; 
-
-  sprintf(msg,NEW_ROOM_MSG,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
-
-  delay(500);
-
-  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
-
-  delay(500);
-
-  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
-
-
-
 }
 
+//MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT
+//#####################################################################################################
+//################################################################################
+//Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup
 
 void setup() {
   Serial.begin(115200);
@@ -290,12 +271,39 @@ void setup() {
 
   connectToWifi();
 
-
-  
-
+  if(sleep_enabled){
+      ++bootCount;
+      esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+      Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) +
+      " Seconds");
+      init_finished = false;
+      sent = false;
+  }
 }
 
+//Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup
+//################################################################################
 
+
+//###############################################################################
+// ############################################################################## 
+void create_room(){
+
+  char msg [350]; 
+
+  sprintf(msg,NEW_ROOM_MSG,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+}
 
 void readSCD30(){
 
@@ -321,35 +329,20 @@ void readSCD30(){
     sprintf(msg,UPDATE_SENSOR,roomnr,roomnr,scd30.CO2,scd30.temperature,scd30.relative_humidity);
     mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
     Serial.print(msg);
-
-
-
-
-
-    
+    sent = true;
+  
   } else {
     //Serial.println("No data");
   }
-  
 }
-
-
-uint32_t t = 0;
-
+//###############################################################################################
+//###############################################################################################
 void loop() {
- 
-  t ++;
-  
-  if(t > 15000){
-
-      readSCD30();
-      t = 0;   
-// todo use timer       
-    
-
-  }
-  delay(1);
-
- 
-  
+    while(!init_finished);
+    readSCD30();
+    while(!sent);
+    if(sleep_enabled){
+    esp_deep_sleep_start();
+    }
+    delay( update_time * mS_TO_m_FACTOR);
 }
