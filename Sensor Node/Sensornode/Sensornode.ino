@@ -14,8 +14,8 @@ extern "C"
 
 //##################################################################################
 //##################################################################################
-#define WIFI_SSID "mioaid"
-#define WIFI_PASSWORD "mioaid22"
+#define WIFI_SSID "eda312"
+#define WIFI_PASSWORD "embsyseda312"
 
 
 #define ASYNC_TCP_SSL_ENABLED       true
@@ -24,7 +24,7 @@ extern "C"
 #include <AsyncMqtt_Generic.h>
 
 //#define MQTT_HOST         IPAddress(192, 168, 2, 110)
-#define MQTT_HOST         "192.168.127.115"        // Broker address
+#define MQTT_HOST         "192.168.1.102"        // Broker address
 
 #if ASYNC_TCP_SSL_ENABLED
 
@@ -33,7 +33,7 @@ extern "C"
   const uint8_t MQTT_SERVER_FINGERPRINT[] = {0xBD,0x0F,0x36,0xDC,0x1C,0x05,0xB8,0xBB,0xD1,0x6C,0xA5,0xC1,0x99,0xD9,0xFA,0xE8,0x0B,0xCD,0x8E,0x85,0xF8,0xF4,0xA5,0x7C,0x3E,0x98,0x1D,0x5E,0x82,0x3D,0xD2,0xB5};
   const char *PubTopic  = "async-mqtt/ESP32_SSL_Pub";               // Topic to publish
   
-  #define MQTT_PORT       9883
+  #define MQTT_PORT       8883
   
 #else
 
@@ -54,10 +54,6 @@ TimerHandle_t wifiReconnectTimer;
 #define NEW_FlexContainer_devAir  "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
 #define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
 #define UPDATE_SENSOR "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%lf,\"temp\":%lf,\"hum\":%lf}},\"ty\":28}"
-
-
-
-
 
 
 
@@ -338,14 +334,21 @@ void readSCD30(){
 }
 
 
-
+uint32_t t = 0;
 
 void loop() {
+ 
+  t ++;
+  
+  if(t > 15000){
 
-  
-  
-  readSCD30();
-  delay(5000);
+      readSCD30();
+      t = 0;   
+// todo use timer       
+    
+
+  }
+  delay(1);
 
  
   
