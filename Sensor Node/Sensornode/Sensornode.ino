@@ -14,8 +14,8 @@ extern "C"
 
 //##################################################################################
 //##################################################################################
-#define WIFI_SSID ""
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "mioaid"
+#define WIFI_PASSWORD "mioaid22"
 
 
 #define ASYNC_TCP_SSL_ENABLED       true
@@ -24,7 +24,7 @@ extern "C"
 #include <AsyncMqtt_Generic.h>
 
 //#define MQTT_HOST         IPAddress(192, 168, 2, 110)
-#define MQTT_HOST         "192.168.0.135"        // Broker address
+#define MQTT_HOST         "192.168.127.115"        // Broker address
 
 #if ASYNC_TCP_SSL_ENABLED
 
@@ -50,10 +50,10 @@ TimerHandle_t wifiReconnectTimer;
 //#########################################################################
 //OneM2M MQTT Default mgf
 
-#define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring_test\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":{\"rn\": \"room%i\"}},\"ty\": 3}"
-#define NEW_FlexContainer_devAir  "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
-#define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
-#define UPDATE_SENSOR "{\"fr\":\"aid\",\"to\":\"cse-in/airQualityMonitoring_test/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%lf,\"temp\":%lf,\"hum\":%lf}},\"ty\":28}"
+#define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room1\"],{\"rn\": \"room%i\"}},\"ty\": 3}"
+#define NEW_FlexContainer_devAir  "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
+#define NEW_FlexContainer_mio_aiQSr "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.moduleclass.mioAirqualitySensor\",\"rn\":\"value\",\"co2\":0,\"temp\":0,\"hum\":0}},\"ty\":28}"
+#define UPDATE_SENSOR "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i/sensor/value\",\"op\":3,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:aiQSr\":{\"co2\":%lf,\"temp\":%lf,\"hum\":%lf}},\"ty\":28}"
 
 
 
@@ -225,12 +225,12 @@ void create_room(){
 
   delay(500);
 
-  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr);                
+  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr,roomnr);                
   mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
 
   delay(500);
 
-  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr);                
+  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
   mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
 
 
@@ -322,7 +322,7 @@ void readSCD30(){
     Serial.println("");
 
     char msg[350];
-    sprintf(msg,UPDATE_SENSOR,scd30.CO2,scd30.temperature,scd30.relative_humidity);
+    sprintf(msg,UPDATE_SENSOR,roomnr,roomnr,scd30.CO2,scd30.temperature,scd30.relative_humidity);
     mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
     Serial.print(msg);
 
