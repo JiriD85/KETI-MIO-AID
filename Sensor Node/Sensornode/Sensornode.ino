@@ -12,10 +12,10 @@ extern "C"
   #include "freertos/timers.h"
 }
 
-
-//##################################################################################
-//##################################################################################
 #define ms_to_min 60000
+//##################################################################################
+//##################################################################################
+// Change Change Change >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #define send_interval_in_min 1
 
 #define WIFI_SSID "<your SSID>"
@@ -23,7 +23,11 @@ extern "C"
 
 #define ASYNC_TCP_SSL_ENABLED true
 
-#define MQTT_HOST "<your Host>"        // Broker address
+#define MQTT_HOST "<your Host>"     
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Change Change Change
+//##################################################################################
+//##################################################################################
 
 #if ASYNC_TCP_SSL_ENABLED
 
@@ -220,8 +224,6 @@ void create_room(){
   sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
   mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
 
-
-
 }
 
 
@@ -318,6 +320,6 @@ void readSCD30(){
 void loop() {   
  
       readSCD30();
-      delay(ms_to_min * send_interval_in_min)
+      delay(ms_to_min * send_interval_in_min);
  
 }
