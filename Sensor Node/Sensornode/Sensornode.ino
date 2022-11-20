@@ -1,50 +1,48 @@
+
 #define ASYNC_TCP_SSL_ENABLED 1
 #include <WiFi.h>
 #include <Ticker.h>
 #include <Adafruit_SCD30.h>
 #include <string.h>
 #include <AsyncMqtt_Generic.h>
+
 extern "C"
 {
   #include "freertos/FreeRTOS.h"
   #include "freertos/timers.h"
 }
-//####################################################################################################################
-//####################################################################################################################
-//Wifi Credentials
-#define WIFI_SSID "mioaid"
-#define WIFI_PASSWORD "mioaid22"
 
-// defines for sleep mode
-//####################################################################################################################
-#define sleep_enabled true      // recommened for battery usage   
-#define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  600        /* Time ESP32 will go to sleep (in seconds) after wakeup sensor value will be sent and then go to sleep again*/
-#define update_time    5          // Time in minutes when sensor value is resent will only take effect if sleep is disabled 
-#define mS_TO_m_FACTOR 60000
-RTC_DATA_ATTR int bootCount = 0; // will be safed and recovere
-bool init_finished;
-bool sent;
-// MQTT Defines
-//####################################################################################################################
-#define ASYNC_TCP_SSL_ENABLED       true
+#define ms_to_min 60000
+//##################################################################################
+//##################################################################################
+// Change Change Change >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#define send_interval_in_min 1
 
-#define MQTT_HOST         ""        // Broker address
+#define WIFI_SSID "<your SSID>"
+#define WIFI_PASSWORD "<your Password>"
+
+#define ASYNC_TCP_SSL_ENABLED true
+
+#define MQTT_HOST "<your Host>"     
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Change Change Change
+//##################################################################################
+//##################################################################################
 
 #if ASYNC_TCP_SSL_ENABLED
 
-  #define MQTT_SECURE     true
-  
+  #define MQTT_SECURE true
+                // Fingerprint of provided crt if you use custom crts you have to change the fingerprint
   const uint8_t MQTT_SERVER_FINGERPRINT[] = {0xBD,0x0F,0x36,0xDC,0x1C,0x05,0xB8,0xBB,0xD1,0x6C,0xA5,0xC1,0x99,0xD9,0xFA,0xE8,0x0B,0xCD,0x8E,0x85,0xF8,0xF4,0xA5,0x7C,0x3E,0x98,0x1D,0x5E,0x82,0x3D,0xD2,0xB5};
-  const char *PubTopic  = "async-mqtt/ESP32_SSL_Pub";               // Topic to publish
+  const char *PubTopic  = "async-mqtt/ESP32_SSL_Pub";               // Test Topic to publish
   
-  #define MQTT_PORT       8883
+  #define MQTT_PORT 8883 //default port change if other ise used
   
 #else
 
-  const char *PubTopic  = "async-mqtt/ESP32_Pub";                   // Topic to publish
+  const char *PubTopic  = "async-mqtt/ESP32_Pub";                   // Test Topic to publish
   
-  #define MQTT_PORT       1883
+  #define MQTT_PORT 1883 //default port change if other ise used
   
 #endif
 
@@ -53,7 +51,7 @@ TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
 
 //#########################################################################
-//OneM2M MQTT Default msg
+//OneM2M MQTT Default mgf
 
 #define NEW_ROOM_MSG "{\"fr\": \"aid\",\"to\": \"cse-in/airQualityMonitoring\",\"op\": 1,\"rvi\": \"3\",\"rqi\": \"1234562\",\"id\": \"ab\",\"srn\": \"as\",\"pc\": {\"m2m:cnt\":\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room1\"],{\"rn\": \"room%i\"}},\"ty\": 3}"
 #define NEW_FlexContainer_devAir  "{\"fr\":\"room%i\",\"to\":\"cse-in/airQualityMonitoring/room%i\",\"op\":1,\"rvi\":\"3\",\"rqi\":\"1234562\",\"pc\":{\"mio:devAir\":{\"acpi\":[\"cse-in/acr_admin\",\"cse-in/acr_room%i\"],\"cnd\":\"org.fhtwmio.common.device.mioDeviceAirQualitySensor\",\"rn\":\"sensor\"}},\"ty\":28}"
@@ -65,9 +63,13 @@ TimerHandle_t wifiReconnectTimer;
 #define dip2 32
 #define dip3 35
 uint8_t roomnr = 0b0;
+
+//##################################################################################
+//##################################################################################
+
 Adafruit_SCD30  scd30;
-// #############################################################
-// Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi
+
+// MQTT ##############################################################
 void connectToWifi()
 {
   Serial.println("Connecting to Wi-Fi...");
@@ -124,10 +126,7 @@ void WiFiEvent(WiFiEvent_t event)
       break;
   }
 }
-// Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi Wifi
-// ####################################################################################
-//#####################################################################################################
-//MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT
+
 void printSeparationLine()
 {
   Serial.println("************************************************");
@@ -144,6 +143,7 @@ void onMqttConnect(bool sessionPresent)
   
   uint16_t packetIdSub = mqttClient.subscribe(PubTopic, 2);
   Serial.print("Subscribing at QoS 2, packetId: "); Serial.println(packetIdSub);
+
   
   mqttClient.publish(PubTopic, 0, true, "ESP32 Test");
   Serial.println("Publishing at QoS 0");
@@ -154,12 +154,7 @@ void onMqttConnect(bool sessionPresent)
   uint16_t packetIdPub2 = mqttClient.publish(PubTopic, 2, true, "test 3");
   Serial.print("Publishing at QoS 2, packetId: "); Serial.println(packetIdPub2);
 
-  // Create room only at initial boot 
-  // Will create room if succesfully connected to Broaker
-  if(bootCount > 2){
-    create_room();
-    init_finished = true;
-  }
+  create_room();
 
   printSeparationLine();
 }
@@ -209,12 +204,28 @@ void onMqttPublish(const uint16_t& packetId)
 {
   Serial.println("Publish acknowledged");
   Serial.print("  packetId: "); Serial.println(packetId);
+}// MQTT ##############################################################
+
+
+void create_room(){
+
+  char msg [350]; 
+
+  sprintf(msg,NEW_ROOM_MSG,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
+  delay(500);
+
+  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
+  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
+
 }
 
-//MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT MQTT
-//#####################################################################################################
-//################################################################################
-//Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup
 
 void setup() {
   Serial.begin(115200);
@@ -272,38 +283,6 @@ void setup() {
 
   connectToWifi();
 
-  if(sleep_enabled){
-      ++bootCount;
-      esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
-      Serial.println("Setup ESP32 to sleep for every " + String(TIME_TO_SLEEP) +
-      " Seconds");
-      init_finished = false;
-      sent = false;
-  }
-}
-
-//Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup Setup
-//################################################################################
-
-
-//###############################################################################
-// ############################################################################## 
-void create_room(){
-
-  char msg [350]; 
-
-  sprintf(msg,NEW_ROOM_MSG,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
-
-  delay(500);
-
-  sprintf(msg,NEW_FlexContainer_devAir,roomnr,roomnr,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
-
-  delay(500);
-
-  sprintf(msg,NEW_FlexContainer_mio_aiQSr,roomnr,roomnr,roomnr);                
-  mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
 }
 
 void readSCD30(){
@@ -330,20 +309,17 @@ void readSCD30(){
     sprintf(msg,UPDATE_SENSOR,roomnr,roomnr,scd30.CO2,scd30.temperature,scd30.relative_humidity);
     mqttClient.publish("/oneM2M/req/aqm/id-in/json",1,true,msg);
     Serial.print(msg);
-    sent = true;
   
   } else {
     //Serial.println("No data");
   }
+  
 }
-//###############################################################################################
-//###############################################################################################
-void loop() {
-    while(!init_finished);
-    readSCD30();
-    while(!sent);
-    if(sleep_enabled){
-    esp_deep_sleep_start();
-    }
-    delay( update_time * mS_TO_m_FACTOR);
+
+
+void loop() {   
+ 
+      readSCD30();
+      delay(ms_to_min * send_interval_in_min);
+ 
 }

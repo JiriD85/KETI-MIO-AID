@@ -1,26 +1,65 @@
 # KETI-MIO-AID
+Raspberry Pi based air quality monitoring system connecting ESP32-S sensor nodes, actuators and Smart LEDs via Zigbee and MQTT to a ACME CSE.
 
-## Raspberry Config
+## High Level Architecture
+Every room is equipped with the following devices:
+- Sensor Node with ESP32-S and a SCD30 sensor measuring the CO2 concentration (ppm), temperature (°C) and humidity (% r.H.)
+- Zigbee Smart LED
+- Zigbee Actuator that controls a fan or a window drive
+
+The Raspberry Pi runs a Docker environment with following applications:
+- Portainer
+- Zigbee2MQTT
+- Node Red
+- Mosquitto MQTT Broker
+- ACME-oneM2M-CSE
+
+**Description of the process**
+- Sensor Nodes are sending their measurements via MQTT to the ACME-oneM2M-CSE
+- The payload of the sensor nodes MQTT message is a OneM2M request and the MQTT topic is /oneM2M/req/aqm/id-in/json
+- Through the definition of specific messages and topics it is ensured, that the information gets through to the ACME-oneM2M-CSE
+- The sensor nodes are getting updated by the sensor messages in the OneM2M CSE
+- The OneM2M CSE sends a response message to the sensor with the MQTT topic /oneM2M/resp/aqm/id-in/json
+- Every response message is processed in Node Red function nodes
+- One function node is creating a OneM2M request to change the state of the actuator (controling a fan or window drive), depending on the measured CO2 concentration level
+- Another function node is creating a OneM2M request to change the color of the smart LED, depending on the measured CO2 concentration level
+- Then there is a function node, that is translating the OneM2M response message to control the smart LEDs and actuators via Zigbee
+- All measured values are visualized with Node Red dashboards
+- Simple control functions are implemented with Node Red dashboards
+
+![Architecture](Pictures/High_Level_Architecture.png)
+
+## Raspberry Pi Config
 ### Network
-- **IP-Address:** 192.168.1.121
-- **Hostname:** rpidockal
-- **User:** pi
-- **Password:** ******
+- **IP-Address:** <your IP address>
+- **Hostname:** <your hostname>
+- **User:** <your user>
+- **Password:** <your pw>
 
 ### Grafana
 - **Port:** 3000
+- http://192.168.1.121:3000/
+- not in use / Dashboards and Widgets were created with Node Red
 
 ### Zigbee2MQTT
-- **Ports:** 8883, 9001
+- **Ports:** 8883, 8081
+- http://192.168.1.121:8081/#/
 
 ### NodeRed
 - **Port:** 1880
+- http://192.168.1.121:1880/
 
 ### Acme CSE
-- **Port:** 3000
+- **Port:** 8080
+- http://192.168.1.121:8080/webui/index.html?ri=id-in&or=aid
+
+### Portainer: https://192.168.1.121:9443/#!/auth
+Username: admin
+Password: PORTAINER@MIO
 
 ### Installation via docker-compose
 `docker-compose up -d`
+[Link to Docker Compose file](Docker\docker-compose.yml)
 
 ![Running Containers](Documentation/Pictures/Portainer_Containers.png)
 
@@ -136,15 +175,3 @@ CSE<CSEBase>
 - group fan-out
 - User app (AE): ```group fan-out <contentInstance> create request``` to CSE
 - CSE: ```notification request``` to actuatorControl1, actuatorcontrol2
-
-## Besprechung mit Prof. Zeitlhofer 12.10.2022:
-- Verwendung von MQTT (eigener MQTT-Broker im Docker) für die Kommunikation der Sensor Nodes mit der ACME CSE (MCA)
-- siehe OneM2M MQTT Binding TS-0010: https://www.onem2m.org/images/files/deliverables/Release2A/TS-0010-MQTT_protocol_binding-v_2_7_1.pdf
-- kein HTTP
-- TLS Verschlüsselung MQTTS --> CA mit OpenSSL --> less /etc/ssl/openssl.cnf kann vorkonfiguriert werden
-- Webserver für Sensor Node: Wifi SSID, Wifi Kennwort, MQTT-Einstellungen, Domain Name für Node, CSE-Einstellungen usw.
-- Zigbee2mqtt für Smart LED und Aktor --> NodeRed für Topic transformieren --> transformiertes Topic an ACME-CSE mittels MQTT schicken (Alternative: Script schreiben das das Topic subscribed, transfromiert und wieder published)
-- Konfiguration der ACME-CSE/mqtt: https://github.com/ankraft/ACME-oneM2M-CSE/blob/master/docs/Configuration.md#client_mqtt
-- Operation der ACME-CSE/mqtt: https://github.com/ankraft/ACME-oneM2M-CSE/blob/master/docs/Operation.md#mqtt
-- Blockschaltbild der Applikation bis 19.10.!
-- Notification Server für "Automatisierungen"
