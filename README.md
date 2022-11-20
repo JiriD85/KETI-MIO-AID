@@ -59,7 +59,7 @@ Password: PORTAINER@MIO
 
 ### Installation via docker-compose
 `docker-compose up -d`
-[Link to Docker Compose file](Docker\docker-compose.yml)
+[Link to Docker Compose file](Docker/docker-compose.yml)
 
 ![Running Containers](Pictures/Portainer_Containers.png)
 
