@@ -61,7 +61,7 @@ Password: PORTAINER@MIO
 `docker-compose up -d`
 [Link to Docker Compose file](Docker\docker-compose.yml)
 
-![Running Containers](Documentation/Pictures/Portainer_Containers.png)
+![Running Containers](Pictures/Portainer_Containers.png)
 
 ## Sensor Node Config
 ### SCD30 Sensor
